@@ -141,13 +141,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 
 /* Form */
 .form{display:grid;grid-template-columns:repeat(2,1fr);gap:24px 32px}
-.field{display:flex;flex-direction:column;gap:8px}
+.field{display:flex;flex-direction:column;gap:8px;align-items:center}
 .field.full{grid-column:1 / -1}
 .field label{font-family:'JetBrains Mono',monospace;font-size:.62em;
-  letter-spacing:.3em;text-transform:uppercase;opacity:.6}
+  letter-spacing:.3em;text-transform:uppercase;opacity:.6;text-align:center}
 .field input,.field select,.field textarea{
   background:transparent;color:#fff;border:none;border-bottom:1px solid var(--line);
-  padding:10px 0;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s}
+  padding:10px 0;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s;
+  text-align:center;width:100%}
 .field input:focus,.field select:focus,.field textarea:focus{border-bottom-color:#ffb454}
 .field select option{background:#0a0a0a;color:#fff}
 .field textarea{min-height:140px;resize:vertical}

@@ -189,11 +189,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .specs--media .cell .cell-body{padding:26px 28px 32px;display:flex;flex-direction:column;gap:14px}
 
 /* Format / Scan two-column block */
-.fs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4vh;
+.fs-grid{display:grid;grid-template-columns:1fr;gap:0;margin-top:4vh;
   border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.fs-grid .col{padding:40px 36px;border-right:1px solid var(--line);
-  display:flex;flex-direction:column;gap:18px;min-height:380px}
-.fs-grid .col:last-child{border-right:none}
+.fs-grid .col{padding:40px 36px;border-bottom:1px solid var(--line);
+  display:flex;flex-direction:column;gap:18px;min-height:auto}
+.fs-grid .col:last-child{border-bottom:none}
 .fs-grid .col .num{font-family:'JetBrains Mono',monospace;font-size:.7em;
   letter-spacing:.3em;opacity:.55}
 .fs-grid .col h3{font-family:'Noto Serif JP',serif;font-weight:700;font-size:1.5em;line-height:1.4;letter-spacing:.02em}
