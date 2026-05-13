@@ -137,7 +137,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   text-transform:uppercase;opacity:.55;margin-bottom:24px}
 
 /* Layout: form + info side-by-side */
-.contact-row{display:grid;grid-template-columns:1.6fr 1fr;gap:64px;margin-top:8vh;align-items:start}
+.contact-row{display:grid;grid-template-columns:1fr;gap:48px;margin-top:8vh;align-items:start;max-width:920px;margin-left:auto;margin-right:auto;width:100%}
+.contact-row .info{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:32px}
 
 /* Form */
 .form{display:grid;grid-template-columns:repeat(2,1fr);gap:24px 32px}
