@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ロケハン3D — データについて</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400;700;900&family=Noto+Sans+JP:wght@200;300;400;600;700;900&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{--ink:#fafaf6;--bg:#000;--line:rgba(255,255,255,.18);--accent:#ffb454}
+html,body{background:var(--bg);color:var(--ink);
+  font-family:'Noto Sans JP',ui-sans-serif,system-ui,sans-serif;font-weight:300;line-height:1.7;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:smooth}
+.serif{font-family:'Noto Serif JP',serif}
+.mono{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace}
+img{max-width:100%;display:block}
+
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")}
+
+.frame{position:relative;min-height:100vh;display:flex;flex-direction:column;
+  padding-top:64px;padding-bottom:80px;
+  padding-left:max(48px, calc((100vw - 100vh * 4 / 3) / 2));
+  padding-right:max(48px, calc((100vw - 100vh * 4 / 3) / 2));
+  overflow:hidden}
+
+.timecode{position:absolute;top:18px;font-size:.65em;letter-spacing:.2em;
+  font-family:'JetBrains Mono',monospace;opacity:.4;text-transform:uppercase}
+.timecode.tl{left:max(220px, calc((100vw - 100vh * 4 / 3) / 2))} .timecode.tr{right:max(48px, 6vw)}
+@media(max-width:900px){.timecode.tl{left:max(48px, 6vw)}}
+
+.chapter-rule{display:flex;align-items:baseline;gap:22px;margin-bottom:60px;
+  font-size:.78em;letter-spacing:.18em;text-transform:uppercase}
+.chapter-rule .num{font-family:'JetBrains Mono',monospace;opacity:.6}
+.chapter-rule .line{flex:1;height:1px;background:currentColor;opacity:.25}
+
+.side-menu{position:fixed;top:50%;left:28px;transform:translateY(-50%);z-index:1100;
+  display:flex;flex-direction:column;gap:14px;background:none;border:none;padding:0;width:170px}
+.side-menu .brand-mini{font-family:'JetBrains Mono',monospace;font-size:.58em;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:10px;margin-bottom:4px;
+  display:flex;justify-content:space-between;align-items:center}
+.side-menu .brand-mini .dot{width:5px;height:5px;background:var(--accent);border-radius:50%;
+  display:inline-block;animation:rec 1.6s ease-in-out infinite}
+@keyframes rec{0%,100%{opacity:1}50%{opacity:.25}}
+.side-menu nav{display:flex;flex-direction:column;gap:13px}
+.side-menu nav a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.78em;
+  letter-spacing:.04em;display:flex;align-items:center;gap:10px;font-weight:300;
+  transition:color .2s,transform .2s}
+.side-menu nav a::before{content:'';width:6px;height:1px;background:currentColor;opacity:.6;
+  transition:width .25s,background .2s,opacity .2s}
+.side-menu nav a:hover{color:#fff;transform:translateX(2px)}
+.side-menu nav a:hover::before{width:14px;background:var(--accent);opacity:1}
+.side-menu nav a.current{color:#fff;font-weight:600}
+.side-menu nav a.current::before{width:14px;background:var(--accent);opacity:1}
+@media(max-width:1199px){.side-menu{display:none}}
+
+/* ============================================
+   MOBILE NAV — hamburger toggle + drawer
+   ============================================ */
+.m-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1200;
+  width:46px;height:46px;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.22);cursor:pointer;
+  align-items:center;justify-content:center;flex-direction:column;gap:5px;padding:0}
+.m-toggle span{display:block;width:22px;height:1px;background:#fff;
+  transition:transform .3s,opacity .3s}
+.m-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.m-toggle.open span:nth-child(2){opacity:0}
+.m-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.m-nav{position:fixed;inset:0;z-index:1150;background:rgba(0,0,0,.96);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:96px 32px 32px;
+  display:flex;flex-direction:column;gap:6px;
+  opacity:0;pointer-events:none;transition:opacity .3s}
+.m-nav.open{opacity:1;pointer-events:auto}
+.m-nav .m-brand{font-family:'JetBrains Mono',monospace;font-size:.7em;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:14px;margin-bottom:14px;
+  display:flex;justify-content:space-between;align-items:center}
+.m-nav .m-brand .dot{width:5px;height:5px;background:var(--accent);border-radius:50%;display:inline-block}
+.m-nav a{color:#fff;text-decoration:none;font-family:'Noto Serif JP',serif;font-weight:300;
+  font-size:1.4em;letter-spacing:.04em;padding:14px 0;
+  border-bottom:1px dotted rgba(255,255,255,.12);transition:color .2s,padding-left .2s}
+.m-nav a::before{content:'· ';color:rgba(255,255,255,.3);transition:color .2s}
+.m-nav a.current,.m-nav a:hover{color:var(--accent);padding-left:6px}
+.m-nav a.current::before,.m-nav a:hover::before{color:var(--accent)}
+@media(min-width:1200px){.m-toggle,.m-nav{display:none!important}}
+@media(max-width:1199px){.m-toggle{display:flex}}
+
+/* ============================================
+   MOBILE — comprehensive overrides ≤ 760px
+   ============================================ */
+@media(max-width:900px){
+  .frame{padding-left:22px;padding-right:22px;padding-top:54px;padding-bottom:60px}
+  .timecode{display:none}
+  .chapter-rule{margin-bottom:36px;font-size:.62em;gap:14px}
+  .foot{font-size:.55em;letter-spacing:.18em;padding-top:36px}
+
+  .hero h1{font-size:clamp(1.9em,9vw,2.8em);margin-bottom:24px}
+  .hero .lede{font-size:.92em;line-height:1.85;padding:0 4px}
+  .hero .en-tag{font-size:.62em;letter-spacing:.3em}
+
+  .sec-h2{font-size:clamp(1.3em,5.5vw,1.8em);line-height:1.55;margin-bottom:14px}
+  .sec-lede{font-size:.86em;line-height:1.85;margin-bottom:4vh}
+  /* Override inline white-space:nowrap on mobile */
+  .frame h2[style*="nowrap"],.frame p[style*="nowrap"]{white-space:normal!important}
+  .sec-h2[style*="nowrap"]{font-size:clamp(1.3em,5.5vw,1.8em)!important}
+  .sec-lede[style*="nowrap"]{font-size:.86em!important;line-height:1.85!important}
+
+  .section-img{margin:2vh auto 4vh}
+  .specs .cell{padding:24px 22px;min-height:auto}
+  .specs .cell h3{font-size:1.2em}
+  .specs .cell p{font-size:.84em;line-height:1.85}
+  .specs--media .cell .cell-body{padding:20px 22px 26px}
+
+  .fs-grid .col{padding:28px 22px;min-height:auto}
+  .fs-grid .col h3{font-size:1.2em;line-height:1.5}
+  .fs-grid .col p{font-size:.86em}
+  .pills .pill{font-size:.6em;padding:5px 10px}
+  .spec-list li{padding:8px 0;font-size:.82em}
+  .spec-list li .k{font-size:.7em}
+
+  .detail{margin-top:4vh}
+  .detail .row{padding:18px 0}
+  .detail .row .v{font-size:.95em}
+  .detail .row .d{font-size:.78em;line-height:1.7}
+
+  .app-block{gap:32px;margin-top:4vh}
+  .app-text p{font-size:.88em;line-height:1.85}
+  .app-features .feat{padding:18px 18px;min-height:auto}
+}
+
+/* Hero (vertically centered between chapter-rule and foot) */
+.hero{justify-content:center;align-items:center;text-align:center}
+.hero h1{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(2.4em,6vw,5.4em);line-height:1.2;letter-spacing:.04em;margin-bottom:32px}
+.hero h1 em{font-style:normal;font-weight:900;font-family:'Noto Sans JP',sans-serif}
+.hero .lede{font-size:clamp(1em,1.4vw,1.2em);max-width:46ch;opacity:.78;line-height:1.85;
+  text-wrap:balance;margin:0 auto auto}
+.hero .en-tag{font-family:'JetBrains Mono',monospace;font-size:.7em;letter-spacing:.4em;
+  text-transform:uppercase;opacity:.55;margin:auto auto 24px}
+
+/* Section H2 (centered) */
+.sec-h2{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(1.8em,3.6vw,3em);line-height:1.4;letter-spacing:.02em;margin-bottom:18px;
+  text-align:center}
+.sec-h2 em{font-style:normal;font-weight:700}
+.sec-lede{font-size:clamp(.95em,1.2vw,1.1em);max-width:62ch;opacity:.78;line-height:1.95;
+  text-wrap:balance;margin:0 auto 6vh;text-align:center}
+
+/* Section banner image (cinematic 21:9 illustration) */
+.section-img{margin:2vh auto 6vh;border:1px solid var(--line);overflow:hidden;
+  aspect-ratio:21/9;position:relative;background:#0a0a0a}
+.section-img img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .8s ease}
+.section-img:hover img{transform:scale(1.02)}
+.section-img::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,transparent 30%,transparent 70%,rgba(0,0,0,.45) 100%)}
+.section-img .cap{position:absolute;left:20px;bottom:14px;z-index:2;
+  font-family:'JetBrains Mono',monospace;font-size:.62em;letter-spacing:.3em;
+  text-transform:uppercase;color:rgba(255,255,255,.75)}
+
+/* Specs grid (3DGS feature highlights) */
+.specs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:4vh;
+  border-top:1px solid var(--line)}
+.specs .cell{padding:36px 28px 32px;border-bottom:1px solid var(--line);
+  border-right:1px solid var(--line);display:flex;flex-direction:column;gap:14px;min-height:240px}
+.specs .cell:nth-child(3n){border-right:none}
+.specs .cell .num{font-family:'JetBrains Mono',monospace;font-size:.65em;
+  letter-spacing:.3em;opacity:.5}
+.specs .cell h3{font-family:'Noto Serif JP',serif;font-weight:400;font-size:1.4em;line-height:1.4}
+.specs .cell p{font-size:.88em;opacity:.72;line-height:1.85}
+.specs .cell ul{list-style:none;display:flex;flex-direction:column;gap:6px;font-size:.82em;opacity:.72}
+.specs .cell ul li::before{content:'– ';opacity:.5;margin-right:6px}
+
+/* Specs grid — with media (image at top of each cell) */
+.specs--media .cell{padding:0;gap:0;min-height:0}
+.specs--media .cell .cell-img{width:100%;aspect-ratio:16/10;overflow:hidden;
+  border-bottom:1px solid var(--line);background:#0a0a0a;position:relative}
+.specs--media .cell .cell-img img{width:100%;height:100%;object-fit:cover;
+  display:block;transition:transform .6s ease,opacity .4s}
+.specs--media .cell:hover .cell-img img{transform:scale(1.03)}
+.specs--media .cell .cell-img::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.45) 100%);pointer-events:none}
+.specs--media .cell .cell-body{padding:26px 28px 32px;display:flex;flex-direction:column;gap:14px}
+
+/* Format / Scan two-column block */
+.fs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4vh;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fs-grid .col{padding:40px 36px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:18px;min-height:380px}
+.fs-grid .col:last-child{border-right:none}
+.fs-grid .col .num{font-family:'JetBrains Mono',monospace;font-size:.7em;
+  letter-spacing:.3em;opacity:.55}
+.fs-grid .col h3{font-family:'Noto Serif JP',serif;font-weight:700;font-size:1.5em;line-height:1.4;letter-spacing:.02em}
+.fs-grid .col p{font-size:.9em;opacity:.78;line-height:1.85}
+
+/* Software pills (.ply対応ソフト) */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pills .pill{font-family:'JetBrains Mono',monospace;font-size:.7em;letter-spacing:.1em;
+  border:1px solid var(--line);padding:6px 12px;color:rgba(255,255,255,.78);
+  text-transform:uppercase;transition:border-color .2s,color .2s}
+.pills .pill:hover{border-color:var(--accent);color:#fff}
+
+/* PortalCam spec list */
+.spec-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.spec-list li{display:grid;grid-template-columns:120px 1fr;gap:18px;font-size:.85em;
+  border-bottom:1px dotted rgba(255,255,255,.12);padding:10px 0;align-items:baseline}
+.spec-list li:last-child{border-bottom:none}
+.spec-list li .k{font-family:'JetBrains Mono',monospace;font-size:.78em;
+  letter-spacing:.2em;text-transform:uppercase;opacity:.55}
+.spec-list li .v{opacity:.85;line-height:1.6}
+
+/* Detail rows */
+.detail{margin-top:6vh;display:flex;flex-direction:column;gap:0;
+  border-top:1px solid var(--line)}
+.detail .row{display:grid;grid-template-columns:160px 1fr 2fr;gap:48px;
+  align-items:center;padding:28px 0;border-bottom:1px solid var(--line)}
+.detail .row .k{font-family:'JetBrains Mono',monospace;font-size:.68em;
+  letter-spacing:.3em;text-transform:uppercase;opacity:.55}
+.detail .row .v{font-family:'Noto Serif JP',serif;font-size:1.05em;letter-spacing:.04em}
+.detail .row .d{font-size:.86em;opacity:.7;line-height:1.8}
+
+/* Chrome app feature grid */
+.app-block{display:grid;grid-template-columns:1.2fr 1fr;gap:64px;margin-top:6vh;align-items:start}
+.app-text p{font-size:.95em;line-height:1.95;opacity:.82;margin-bottom:18px}
+.app-text .badge{display:inline-flex;align-items:center;gap:10px;
+  font-family:'JetBrains Mono',monospace;font-size:.65em;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);
+  border:1px solid rgba(255,180,84,.4);padding:8px 14px;margin-bottom:24px}
+.app-text .badge::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%}
+.app-features{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+  border:1px solid var(--line)}
+.app-features .feat{background:#000;padding:24px 22px;display:flex;flex-direction:column;gap:10px;
+  min-height:140px}
+.app-features .feat .ic{font-size:1.4em;opacity:.8}
+.app-features .feat h4{font-family:'Noto Serif JP',serif;font-weight:400;font-size:1.05em;letter-spacing:.02em}
+.app-features .feat p{font-size:.8em;opacity:.65;line-height:1.7}
+
+.foot{margin-top:auto;display:flex;justify-content:space-between;
+  font-family:'JetBrains Mono',monospace;font-size:.62em;letter-spacing:.25em;
+  text-transform:uppercase;opacity:.4;padding-top:60px}
+.fade{opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s ease}
+.fade.in{opacity:1;transform:none}
+
+@media(max-width:900px){
+  .specs,.fs-grid,.app-block,.app-features{grid-template-columns:1fr}
+  .specs .cell,.fs-grid .col{border-right:none}
+  .detail .row{grid-template-columns:1fr;gap:8px;padding:22px 0}
+  .spec-list li{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="side-menu">
+  <div class="brand-mini"><span>LOCAHUN 3D</span><span class="dot"></span></div>
+  <nav>
+    <a href="locahun3d_manifesto.html">マニフェスト</a>
+    <a href="locahun3d_data.html" class="current">データについて</a>
+    <a href="locahun3d_works.html">使用シチュエーション・実績</a>
+    <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
+    <a href="locahun3d_demo.html">デモ・見積</a>
+    <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+    <a href="locahun3d_contact.html">お問い合わせ</a>
+  </nav>
+</aside>
+
+<button class="m-toggle" id="mToggle" aria-label="メニュー" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<aside class="m-nav" id="mNav" aria-hidden="true">
+  <div class="m-brand"><span>LOCAHUN 3D</span><span class="dot"></span></div>
+  <a href="locahun3d_manifesto.html">マニフェスト</a>
+  <a href="locahun3d_data.html" class="current">データについて</a>
+  <a href="locahun3d_works.html">使用シチュエーション・実績</a>
+  <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
+  <a href="locahun3d_demo.html">デモ・見積</a>
+  <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+  <a href="locahun3d_contact.html">お問い合わせ</a>
+</aside>
+
+<!-- ===== HERO ===== -->
+<section class="frame hero" id="d1">
+  <span class="timecode tl">PAGE / DATA</span>
+  <span class="timecode tr">— LOCAHUN 3D —</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">PAGE 02</span>
+    <span class="line"></span>
+    <span>About the data</span>
+  </div>
+
+  <p class="en-tag fade">— ABOUT THE DATA —</p>
+  <h1 class="fade"><em>データ</em>について</h1>
+  <p class="lede fade" style="max-width:none;white-space:nowrap">
+    ロケハン3D が扱う 3D Gaussian Splatting データの基礎、対応フォーマット、取得方法、<br>
+    そして Chrome 上で動作するロケハン3D アプリケーションについて。<br>
+    持ち込めるもの、出力できるもの、現場での再現性を、ここで把握できます。
+  </p>
+
+  <div class="foot">
+    <span>DATA — INDEX</span>
+    <span>P. 01 / 05</span>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 1: WHAT IS 3DGS ===== -->
+<section class="frame" id="d2">
+  <span class="timecode tl">CHAPTER 01</span>
+  <span class="timecode tr">— WHAT IS 3DGS —</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">CH. 01</span>
+    <span class="line"></span>
+    <span>3D Gaussian Splatting とは？</span>
+  </div>
+
+  <h2 class="sec-h2 fade">
+    実空間を、<em>そのまま</em>持ち帰る<br>
+    新しい 3D 表現技術。
+  </h2>
+  <p class="sec-lede fade" style="max-width:none;white-space:nowrap">
+    3D Gaussian Splatting (3DGS) は、<br>
+    複数視点の写真や動画から実空間を高密度に復元する技術です。<br>
+    無数の半透明な楕円体（Gaussian）を空間に配置することで、<br>
+    フォトグラメトリやメッシュでは再現が難しかった<br>
+    植栽・ガラス・反射・微細な質感までを、撮影時の見た目のまま記録します。<br>
+    メッシュ + テクスチャ方式と比較して<em style="font-style:normal;font-weight:700;color:var(--accent)">圧倒的に軽量</em>でありながら、<br>
+    GPU ラスタライズに近い高速描画で<em style="font-style:normal;font-weight:700;color:var(--accent)">リアルタイムビジュアライズ</em>に最適。<br>
+    ロケハン3D は、この 3DGS データを<br>
+    「映像制作の現場で使える形」に最適化しています。
+  </p>
+
+  <figure class="section-img fade">
+    <img src="assets/Digiloke_DemoView_Demo.png" alt="3DGS デモビュー">
+    <figcaption class="cap">— 3DGS DEMO VIEW</figcaption>
+  </figure>
+
+  <div class="specs">
+    <div class="cell fade">
+      <div class="num">01 / PHOTOREAL</div>
+      <h3>光学的な写実性</h3>
+      <p>従来のメッシュ + テクスチャでは表現困難だった半透明物・反射・微細な照明変化を、
+        撮影時の見た目のまま保持します。</p>
+    </div>
+    <div class="cell fade">
+      <div class="num">02 / REALTIME</div>
+      <h3>リアルタイム描画</h3>
+      <p>ラスタライズに近い高速描画方式により、NeRF のような重い推論なしに
+        ぬるぬると視点移動が可能。意思決定の速度に直結します。</p>
+    </div>
+    <div class="cell fade">
+      <div class="num">03 / PORTABLE</div>
+      <h3>軽量配信</h3>
+      <p>1 シーンあたり数十〜数百MB。<br>WebGL / WebGPU で動作するため、<br>ノート PC ブラウザだけで誰でも開ける配信形式が組めます。</p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>WHAT IS 3DGS</span>
+    <span>P. 02 / 05</span>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 2: FORMAT & SCAN ===== -->
+<section class="frame" id="d3">
+  <span class="timecode tl">CHAPTER 02</span>
+  <span class="timecode tr">— FORMAT &amp; SCAN —</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">CH. 02</span>
+    <span class="line"></span>
+    <span>対応フォーマット & 取得方法</span>
+  </div>
+
+  <h2 class="sec-h2 fade">
+    扱うのは <em>.ply</em>（Gaussian Splatting）<br>
+    取得は <em>XGRIDS PortalCam</em>
+  </h2>
+  <p class="sec-lede fade" style="max-width:none;white-space:nowrap">
+    ロケハン3D が標準で扱うのは Gaussian Splatting 形式の .ply。<br>
+    主要な学習・編集・配信ソフトと相互運用が可能です。<br>
+    撮影は XGRIDS PortalCam を中心に、<br>
+    SLAM ベースの実空間スキャンを採用しています。
+  </p>
+
+  <figure class="section-img fade" style="aspect-ratio:16/9">
+    <img src="assets/Digiloke_Portalcam.JPG" alt="XGRIDS PortalCam によるスキャン" style="object-position:center 30%">
+    <figcaption class="cap">— XGRIDS PORTALCAM · SLAM SCANNING</figcaption>
+  </figure>
+
+  <div class="fs-grid">
+    <!-- 01 / FORMAT -->
+    <div class="col fade">
+      <div class="num">01 / FORMAT — 対応フォーマット</div>
+      <h3>.ply (Gaussian Splatting) を中心に、<br>主要ツールと相互運用</h3>
+      <p>標準入力は Gaussian Splatting 形式の .ply。<br>圧縮形式の .splat / .ksplat、 Niantic / Scaniverse の .spz もそのまま読み込めます。<br>以下の主要ソフトと、書き出し・読み込みの双方向で接続できます。</p>
+
+      <div class="pills">
+        <span class="pill">XGRIDS PortalCam</span>
+        <span class="pill">Postshot</span>
+        <span class="pill">Nerfstudio</span>
+        <span class="pill">Polycam</span>
+        <span class="pill">Scaniverse</span>
+        <span class="pill">SuperSplat</span>
+        <span class="pill">Three.js / Splat Viewer</span>
+        <span class="pill">Unreal Engine 5</span>
+        <span class="pill">Unity (3DGS plugin)</span>
+        <span class="pill">Blender (3DGS addon)</span>
+        <span class="pill">Luma AI</span>
+        <span class="pill">Inria 3DGS (CUDA)</span>
+      </div>
+    </div>
+
+    <!-- 02 / SCAN -->
+    <div class="col fade">
+      <div class="num">02 / SCAN — 取得方法</div>
+      <h3>XGRIDS PortalCam による SLAM スキャン</h3>
+      <p>XGRIDS PortalCam は、LiDAR と複数カメラを統合した SLAM 型の<br>ハンドヘルド／ウェアラブル スキャナー。<br>歩いて回るだけで実空間を Gaussian Splatting 形式で出力できます。</p>
+
+      <ul class="spec-list">
+        <li><span class="k">Output</span><span class="v">.ply (Gaussian Splatting) / .las / .ply (point cloud)</span></li>
+        <li><span class="k">Method</span><span class="v">LiDAR + Multi-cam SLAM（リアルタイム位置推定）</span></li>
+        <li><span class="k">Range</span><span class="v">屋内 1 室 〜 街区スケール（屋外100m+）まで連続スキャン可</span></li>
+        <li><span class="k">Accuracy</span><span class="v">cm オーダーの点群精度。距離測定の基準として実用十分</span></li>
+        <li><span class="k">Speed</span><span class="v">1 部屋 5–10 分 / 屋外ロケ 15–30 分が目安</span></li>
+        <li><span class="k">Output Size</span><span class="v">50–500 MB / scene（屋内小〜街区中規模）</span></li>
+      </ul>
+
+      <div style="margin-top:18px;padding:18px 20px;border:1px solid rgba(255,180,84,.3);
+                  background:rgba(255,180,84,.04)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.62em;
+                    letter-spacing:.3em;text-transform:uppercase;color:var(--accent);
+                    margin-bottom:10px">+ DRONE CAPTURE</div>
+        <p style="font-size:.85em;line-height:1.85;opacity:.85;margin:0">
+          広域ロケや屋上・水辺・段差など徒歩で回り込めない範囲は、
+          <strong style="color:#fff">ドローン空撮（多視点撮影）</strong>からの 3DGS 再構築にも対応。
+          PortalCam の地上スキャンと組み合わせることで、空 ↔ 地上の継ぎ目のない 3D 空間を一度に持ち帰れます。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail">
+    <div class="row fade">
+      <span class="k">Recommended</span>
+      <span class="v">最大 200 万点</span>
+      <span class="d">大規模ロケでも、ロケハン3D 上で滑らかに動作する内部キャッシュの上限値。</span>
+    </div>
+    <div class="row fade">
+      <span class="k">Color Space</span>
+      <span class="v">sRGB / Linear 両対応</span>
+      <span class="d">環境ライティングは内部 Linear で計算、最終 JPEG は sRGB で書き出し。</span>
+    </div>
+    <div class="row fade">
+      <span class="k">Output</span>
+      <span class="v">FHD JPEG + メタデータ</span>
+      <span class="d">1920×1080。日時・座標・レンズ情報・ショット番号をフレーム外に焼付け。</span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>FORMAT &amp; SCAN</span>
+    <span>P. 03 / 05</span>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 3: BEYOND SCOUT — APPLICATION ===== -->
+<section class="frame" id="d4">
+  <span class="timecode tl">CHAPTER 03</span>
+  <span class="timecode tr">— BEYOND SCOUT —</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">CH. 03</span>
+    <span class="line"></span>
+    <span>応用ワークフロー — ロケハンの先へ</span>
+  </div>
+
+  <h2 class="sec-h2 fade" style="white-space:nowrap">
+    取得した 3DGS は、<em>合成・プリビズ・ライティング</em>まで<br>
+    そのまま使い回せる。
+  </h2>
+  <p class="sec-lede fade" style="max-width:none;white-space:nowrap">
+    3DGS データはロケハン用途に留まりません。<br>
+    Blender / Unreal / Unity / Maya / After Effects といった<br>
+    主要 DCC ツールへ持ち込めば、<br>
+    3D トラッキング基準、アニメーションプリビズ、ライティング検証、<br>
+    後段の VFX 合成までを<em style="font-style:normal;font-weight:700;color:var(--accent)">同じ実空間データ 1 つ</em>で横断できます。
+  </p>
+
+  <div class="specs specs--media">
+    <div class="cell fade">
+      <div class="cell-img"><img src="assets/Digiloke_Pcloud_Demo.jpg" alt="3D トラッキング — 点群オーバーレイ"></div>
+      <div class="cell-body">
+        <div class="num">01 / TRACKING</div>
+        <h3>3D トラッキング基準</h3>
+        <p>3DGS は実空間スケールで取得されているため、After Effects / Mocha / SynthEyes /
+          Blender のカメラトラッキングや 3D 合成のジオメトリ基準としてそのまま活用可能。
+          実写素材との整合精度が大きく向上します。</p>
+      </div>
+    </div>
+    <div class="cell fade">
+      <div class="cell-img"><img src="assets/Digiloke_UECinema_Demo.png" alt="プリビズ — Unreal シーケンサー"></div>
+      <div class="cell-body">
+        <div class="num">02 / PREVIZ</div>
+        <h3>アニメーションプリビズ</h3>
+        <p>Unreal Engine 5 / Blender / Maya にインポートし、CG キャラクターやカメラワークを
+          実空間に重ねて事前検証。動線・尺・アングルを撮影前に詰められるため、
+          当日の判断スピードが段違いになります。</p>
+      </div>
+    </div>
+    <div class="cell fade">
+      <div class="cell-img"><img src="assets/Digiloke_NightView_Demo.jpg" alt="ライティング — 夜景ビュー"></div>
+      <div class="cell-body">
+        <div class="num">03 / LIGHTING</div>
+        <h3>ライティング & ビジュアライズ</h3>
+        <p>3DGS は<strong style="color:#fff">軽量かつリアルタイム描画</strong>に特化しているため、
+          環境光や疑似 HDRI を差し替えながら、時間帯・天候・照明位置の検証を即座に回せる。
+          美術・照明部のシミュレーション環境としても優秀です。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>BEYOND SCOUT</span>
+    <span>P. 04 / 05</span>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 4: CHROME APP ===== -->
+<section class="frame" id="d5">
+  <span class="timecode tl">CHAPTER 04</span>
+  <span class="timecode tr">— CHROME APP —</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">CH. 04</span>
+    <span class="line"></span>
+    <span>Chrome アプリケーション「ロケハン3D」</span>
+  </div>
+
+  <h2 class="sec-h2 fade">
+    インストール不要。<br>
+    <em>ブラウザ</em>で開いて、すぐに使う。
+  </h2>
+
+  <div class="app-block">
+    <div class="app-text fade">
+      <span class="badge">CHROME APPLICATION</span>
+      <p>「ロケハン3D」は、Chrome ブラウザ上で動作する<br>3DGS ビューアー兼仮想カメラアプリケーションです。<br>スキャンした .ply / .splat ファイルをドラッグ&ドロップするだけで、<br>実機相当のレンズシミュレーション、距離測定、環境ライティング、<br>メタデータ付き JPEG 書き出しまで、すべてブラウザの中で完結します。</p>
+      <p>WebGPU / WebGL2 によるハードウェアアクセラレーションで、<br>200 万点規模のシーンでも滑らかな視点移動を維持。<br>ファイルはローカルで処理されるため、撮影前のロケ情報を<br>外部にアップロードせず安全に扱えます。配布もリンク 1 本で完了します。</p>
+    </div>
+
+    <div class="app-features fade">
+      <div class="feat">
+        <span class="ic">⚡</span>
+        <h4>インストール不要</h4>
+        <p>Chrome があれば即起動。Mac / Windows / Linux 共通。スタッフ全員に同じ環境を即配布。</p>
+      </div>
+      <div class="feat">
+        <span class="ic">🛡</span>
+        <h4>ローカル処理</h4>
+        <p>3DGS データはブラウザ内で完結。サーバーへのアップロードなし、機密ロケも安心。</p>
+      </div>
+      <div class="feat">
+        <span class="ic">🚀</span>
+        <h4>WebGPU 対応</h4>
+        <p>最新のハードウェア API で 200 万点シーンを 60fps 帯で操作。重いシーンでも妥協しない。</p>
+      </div>
+      <div class="feat">
+        <span class="ic">🔗</span>
+        <h4>URL で共有</h4>
+        <p>シーン + 仮想カメラ設定を URL 化。監督・撮影・美術が同じ画を即チェックできます。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>CHROME APP</span>
+    <span>P. 05 / 05</span>
+  </div>
+</section>
+
+<script>
+const io=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}},{threshold:.12});
+document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+const mToggle=document.getElementById('mToggle'),mNav=document.getElementById('mNav');
+function setMNav(open){
+  mToggle.classList.toggle('open',open);mNav.classList.toggle('open',open);
+  mToggle.setAttribute('aria-expanded',open?'true':'false');
+  mNav.setAttribute('aria-hidden',open?'false':'true');
+  document.body.style.overflow=open?'hidden':'';
+}
+mToggle.addEventListener('click',()=>setMNav(!mNav.classList.contains('open')));
+mNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMNav(false)));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')setMNav(false)});
+</script>
+</body>
+</html>

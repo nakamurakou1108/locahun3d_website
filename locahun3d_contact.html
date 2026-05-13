@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ロケハン3D — お問い合わせ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400;700;900&family=Noto+Sans+JP:wght@200;300;400;600;700;900&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{--ink:#fafaf6;--bg:#000;--line:rgba(255,255,255,.18)}
+html,body{background:var(--bg);color:var(--ink);
+  font-family:'Noto Sans JP',ui-sans-serif,system-ui,sans-serif;font-weight:300;line-height:1.7;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:smooth}
+.serif{font-family:'Noto Serif JP',serif}
+
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")}
+
+.frame{position:relative;min-height:100vh;display:flex;flex-direction:column;
+  padding-top:64px;padding-bottom:80px;
+  padding-left:max(48px, calc((100vw - 100vh * 4 / 3) / 2));
+  padding-right:max(48px, calc((100vw - 100vh * 4 / 3) / 2));overflow:hidden}
+
+.timecode{position:absolute;top:18px;font-size:.65em;letter-spacing:.2em;
+  font-family:'JetBrains Mono',monospace;opacity:.4;text-transform:uppercase}
+.timecode.tl{left:max(220px, calc((100vw - 100vh * 4 / 3) / 2))} .timecode.tr{right:max(48px, 6vw)}
+@media(max-width:900px){.timecode.tl{left:max(48px, 6vw)}}
+
+.chapter-rule{display:flex;align-items:baseline;gap:22px;margin-bottom:60px;
+  font-size:.78em;letter-spacing:.18em;text-transform:uppercase}
+.chapter-rule .num{font-family:'JetBrains Mono',monospace;opacity:.6}
+.chapter-rule .line{flex:1;height:1px;background:currentColor;opacity:.25}
+
+.side-menu{position:fixed;top:50%;left:28px;transform:translateY(-50%);z-index:1100;
+  display:flex;flex-direction:column;gap:14px;background:none;border:none;padding:0;width:170px}
+.side-menu .brand-mini{font-family:'JetBrains Mono',monospace;font-size:.58em;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:10px;margin-bottom:4px;
+  display:flex;justify-content:space-between;align-items:center}
+.side-menu .brand-mini .dot{width:5px;height:5px;background:#ffb454;border-radius:50%;display:inline-block;animation:rec 1.6s ease-in-out infinite}
+@keyframes rec{0%,100%{opacity:1}50%{opacity:.25}}
+.side-menu nav{display:flex;flex-direction:column;gap:13px}
+.side-menu nav a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.78em;
+  letter-spacing:.04em;display:flex;align-items:center;gap:10px;font-weight:300;transition:color .2s,transform .2s}
+.side-menu nav a::before{content:'';width:6px;height:1px;background:currentColor;opacity:.6;transition:width .25s,background .2s,opacity .2s}
+.side-menu nav a:hover{color:#fff;transform:translateX(2px)}
+.side-menu nav a:hover::before{width:14px;background:#ffb454;opacity:1}
+.side-menu nav a.current{color:#fff;font-weight:600}
+.side-menu nav a.current::before{width:14px;background:#ffb454;opacity:1}
+@media(max-width:1199px){.side-menu{display:none}}
+
+/* ============================================
+   MOBILE NAV — hamburger toggle + drawer
+   ============================================ */
+.m-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1200;
+  width:46px;height:46px;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.22);cursor:pointer;
+  align-items:center;justify-content:center;flex-direction:column;gap:5px;padding:0}
+.m-toggle span{display:block;width:22px;height:1px;background:#fff;
+  transition:transform .3s,opacity .3s}
+.m-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.m-toggle.open span:nth-child(2){opacity:0}
+.m-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.m-nav{position:fixed;inset:0;z-index:1150;background:rgba(0,0,0,.96);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:96px 32px 32px;
+  display:flex;flex-direction:column;gap:6px;
+  opacity:0;pointer-events:none;transition:opacity .3s;overflow-y:auto}
+.m-nav.open{opacity:1;pointer-events:auto}
+.m-nav .m-brand{font-family:'JetBrains Mono',monospace;font-size:.7em;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:14px;margin-bottom:14px;
+  display:flex;justify-content:space-between;align-items:center}
+.m-nav .m-brand .dot{width:5px;height:5px;background:#ffb454;border-radius:50%;display:inline-block}
+.m-nav a{color:#fff;text-decoration:none;font-family:'Noto Serif JP',serif;font-weight:300;
+  font-size:1.4em;letter-spacing:.04em;padding:14px 0;
+  border-bottom:1px dotted rgba(255,255,255,.12);transition:color .2s,padding-left .2s}
+.m-nav a::before{content:'· ';color:rgba(255,255,255,.3);transition:color .2s}
+.m-nav a.current,.m-nav a:hover{color:#ffb454;padding-left:6px}
+.m-nav a.current::before,.m-nav a:hover::before{color:#ffb454}
+@media(min-width:1200px){.m-toggle,.m-nav{display:none!important}}
+@media(max-width:1199px){.m-toggle{display:flex}}
+
+/* ============================================
+   MOBILE — comprehensive overrides ≤ 760px
+   ============================================ */
+@media(max-width:900px){
+  .frame{padding-left:22px;padding-right:22px;padding-top:54px;padding-bottom:60px}
+  .timecode{display:none}
+  .chapter-rule{margin-bottom:36px;font-size:.62em;gap:14px}
+  .foot{font-size:.55em;letter-spacing:.18em;padding-top:36px}
+
+  .hero h1{font-size:clamp(1.9em,9vw,2.8em);margin-bottom:22px}
+  .hero .lede{font-size:.92em;line-height:1.85;padding:0 4px}
+  .hero .en-tag{font-size:.62em;letter-spacing:.3em}
+
+  .contact-row{margin-top:5vh;gap:32px}
+  .form{gap:18px 0}
+  .field label{font-size:.58em;letter-spacing:.22em}
+  .field textarea{min-height:120px}
+
+  .quote-preview,.quote-empty{padding:18px 20px}
+  .quote-preview .qp-head,.quote-empty .qe-head{font-size:.55em;letter-spacing:.22em;gap:10px}
+  .quote-preview dl{grid-template-columns:1fr;gap:6px 0}
+  .quote-preview dt{font-size:.7em;letter-spacing:.14em;margin-top:8px}
+  .quote-preview dd{font-size:.88em}
+  .quote-preview .qp-price{font-size:1.2em}
+  .quote-empty p{font-size:.84em;line-height:1.85}
+  .quote-empty .qe-btn{font-size:.6em;letter-spacing:.22em;padding:10px 20px;align-self:stretch;text-align:center}
+
+  .info{padding-top:24px;gap:24px}
+  .info .block .v{font-size:1em}
+  .info .block .v.mono{font-size:.88em}
+  .info .block p{font-size:.82em;line-height:1.85;white-space:normal!important}
+
+  .emergency{margin-top:48px;padding:24px 22px;gap:12px}
+  .emergency .lbl{font-size:.55em;letter-spacing:.22em}
+  .emergency p{font-size:.82em;line-height:1.85}
+  .emergency .phone{font-size:1.1em;letter-spacing:.06em;padding:10px 22px}
+  .emergency .creed{font-size:.95em;line-height:1.85;letter-spacing:.04em}
+
+  .submit-row{margin-top:24px}
+  .btn{font-size:.62em;letter-spacing:.22em;padding:14px 24px;width:100%;max-width:300px}
+}
+
+.hero{justify-content:center;align-items:center;text-align:center}
+.hero h1{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(2.4em,6vw,5.4em);line-height:1.2;letter-spacing:.04em;margin-bottom:32px}
+.hero h1 em{font-style:normal;font-weight:900;font-family:'Noto Sans JP',sans-serif}
+.hero .lede{font-size:clamp(1em,1.4vw,1.2em);max-width:46ch;opacity:.78;line-height:1.85;
+  text-wrap:balance;margin-left:auto;margin-right:auto}
+.hero .en-tag{font-family:'JetBrains Mono',monospace;font-size:.7em;letter-spacing:.4em;
+  text-transform:uppercase;opacity:.55;margin-bottom:24px}
+
+/* Layout: form + info side-by-side */
+.contact-row{display:grid;grid-template-columns:1.6fr 1fr;gap:64px;margin-top:8vh;align-items:start}
+
+/* Form */
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:24px 32px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field.full{grid-column:1 / -1}
+.field label{font-family:'JetBrains Mono',monospace;font-size:.62em;
+  letter-spacing:.3em;text-transform:uppercase;opacity:.6}
+.field input,.field select,.field textarea{
+  background:transparent;color:#fff;border:none;border-bottom:1px solid var(--line);
+  padding:10px 0;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-bottom-color:#ffb454}
+.field select option{background:#0a0a0a;color:#fff}
+.field textarea{min-height:140px;resize:vertical}
+.submit-row{display:flex;flex-direction:column;justify-content:center;align-items:center;
+  margin:32px auto 0;gap:18px;text-align:center;max-width:840px}
+.submit-row .privacy{font-size:.72em;opacity:.55;display:block;width:100%;text-align:center}
+
+/* Emergency contact block — full-width below the contact row */
+.emergency{margin:64px auto 0;padding:36px 40px;max-width:840px;
+  border:1px solid rgba(255,180,84,.3);background:rgba(255,180,84,.04);
+  display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.emergency .lbl{font-family:'JetBrains Mono',monospace;font-size:.62em;
+  letter-spacing:.3em;text-transform:uppercase;color:#ffb454;opacity:.9}
+.emergency p{font-size:.9em;line-height:1.95;opacity:.85;margin:0}
+.emergency .phone{font-family:'JetBrains Mono',monospace;font-size:1.5em;
+  letter-spacing:.1em;color:#ffb454;text-decoration:none;font-weight:600;
+  padding:12px 28px;border:1px solid rgba(255,180,84,.5);margin:4px 0;
+  transition:background .2s,color .2s}
+.emergency .phone:hover{background:#ffb454;color:#000}
+.emergency .note{font-size:.78em;opacity:.6;line-height:1.85;text-wrap:balance;max-width:54ch}
+.emergency .creed{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(1.05em,1.4vw,1.3em);letter-spacing:.08em;line-height:1.8;
+  margin:22px 0 0;padding-top:22px;border-top:1px dotted rgba(255,180,84,.3);
+  color:rgba(255,255,255,.92);text-align:center}
+.emergency .creed em{font-style:normal;font-weight:700;color:#ffb454}
+.emergency .signature{font-family:'JetBrains Mono',monospace;font-size:.62em;
+  letter-spacing:.32em;text-transform:uppercase;opacity:.4;margin:8px 0 0;
+  text-align:center}
+.btn{display:inline-block;padding:16px 32px;border:1px solid rgba(255,255,255,.45);
+  color:#fff;background:transparent;text-decoration:none;font-family:'JetBrains Mono',monospace;
+  font-size:.72em;letter-spacing:.3em;text-transform:uppercase;text-align:center;cursor:pointer;
+  transition:background .2s,color .2s,letter-spacing .2s}
+.btn:hover{background:#fff;color:#000;letter-spacing:.36em}
+
+/* Estimate preview block — appears when arriving from demo page */
+.quote-preview{grid-column:1 / -1;margin-bottom:8px;padding:24px 28px;
+  border:1px solid rgba(255,180,84,.3);background:rgba(255,180,84,.04);
+  display:none;flex-direction:column;gap:14px}
+.quote-preview.show{display:flex}
+.quote-preview .qp-head{display:flex;align-items:baseline;gap:14px;
+  font-family:'JetBrains Mono',monospace;font-size:.62em;letter-spacing:.3em;
+  text-transform:uppercase;color:#ffb454;opacity:.95;padding-bottom:10px;
+  border-bottom:1px dotted rgba(255,180,84,.3)}
+.quote-preview .qp-head .qp-line{flex:1;height:1px;background:rgba(255,180,84,.25)}
+.quote-preview dl{display:grid;grid-template-columns:auto 1fr;gap:8px 24px;
+  font-size:.85em;line-height:1.7}
+.quote-preview dt{font-family:'JetBrains Mono',monospace;font-size:.78em;
+  letter-spacing:.16em;text-transform:uppercase;opacity:.55}
+.quote-preview dd{font-size:.95em;color:#fff;word-break:break-word}
+.quote-preview .qp-price{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:1.5em;letter-spacing:.04em;color:#ffb454}
+
+/* Quote-empty block — shown when no estimate params present */
+.quote-empty{grid-column:1 / -1;margin-bottom:8px;padding:24px 28px;
+  border:1px dashed rgba(255,180,84,.4);background:rgba(255,180,84,.025);
+  display:flex;flex-direction:column;gap:14px}
+.quote-empty.hide{display:none}
+.quote-empty .qe-head{display:flex;align-items:baseline;gap:14px;
+  font-family:'JetBrains Mono',monospace;font-size:.62em;letter-spacing:.3em;
+  text-transform:uppercase;color:#ffb454;opacity:.95;padding-bottom:10px;
+  border-bottom:1px dotted rgba(255,180,84,.3)}
+.quote-empty .qe-head .qe-line{flex:1;height:1px;background:rgba(255,180,84,.25)}
+.quote-empty p{font-size:.88em;line-height:1.95;opacity:.88;margin:0}
+.quote-empty p strong{color:#fff;font-weight:600}
+.quote-empty .qe-btn{align-self:center;margin-top:6px;padding:11px 24px;
+  border:1px solid rgba(255,180,84,.55);color:#ffb454;text-decoration:none;
+  font-family:'JetBrains Mono',monospace;font-size:.65em;letter-spacing:.28em;
+  text-transform:uppercase;transition:background .2s,color .2s,letter-spacing .2s}
+.quote-empty .qe-btn:hover{background:#ffb454;color:#000;letter-spacing:.34em}
+
+/* Side info */
+.info{display:flex;flex-direction:column;gap:32px;border-left:1px solid var(--line);padding-left:48px}
+.info .block{display:flex;flex-direction:column;gap:8px}
+.info .block .lbl{font-family:'JetBrains Mono',monospace;font-size:.62em;
+  letter-spacing:.3em;text-transform:uppercase;opacity:.55}
+.info .block .v{font-family:'Noto Serif JP',serif;font-size:1.1em;letter-spacing:.04em}
+.info .block .v.mono{font-family:'JetBrains Mono',monospace;font-size:.95em;letter-spacing:.05em}
+.info .block p{font-size:.86em;opacity:.7;line-height:1.8}
+
+.foot{margin-top:auto;display:flex;justify-content:space-between;
+  font-family:'JetBrains Mono',monospace;font-size:.62em;letter-spacing:.25em;
+  text-transform:uppercase;opacity:.4;padding-top:60px}
+.fade{opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s ease}
+.fade.in{opacity:1;transform:none}
+
+@media(max-width:900px){
+  .contact-row{grid-template-columns:1fr;gap:40px}
+  .form{grid-template-columns:1fr}
+  .info{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:32px}
+}
+</style>
+</head>
+<body>
+
+<aside class="side-menu">
+  <div class="brand-mini"><span>LOCAHUN 3D</span><span class="dot"></span></div>
+  <nav>
+    <a href="locahun3d_manifesto.html">マニフェスト</a>
+    <a href="locahun3d_data.html">データについて</a>
+    <a href="locahun3d_works.html">使用シチュエーション・実績</a>
+    <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
+    <a href="locahun3d_demo.html">デモ・見積</a>
+    <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+    <a href="locahun3d_contact.html" class="current">お問い合わせ</a>
+  </nav>
+</aside>
+
+<button class="m-toggle" id="mToggle" aria-label="メニュー" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<aside class="m-nav" id="mNav" aria-hidden="true">
+  <div class="m-brand"><span>LOCAHUN 3D</span><span class="dot"></span></div>
+  <a href="locahun3d_manifesto.html">マニフェスト</a>
+  <a href="locahun3d_data.html">データについて</a>
+  <a href="locahun3d_works.html">使用シチュエーション・実績</a>
+  <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
+  <a href="locahun3d_demo.html">デモ・見積</a>
+  <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+  <a href="locahun3d_contact.html" class="current">お問い合わせ</a>
+</aside>
+
+<section class="frame hero">
+  <span class="timecode tl">PAGE / CONTACT</span>
+  <span class="timecode tr">— LOCAHUN 3D —</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">PAGE 04</span>
+    <span class="line"></span>
+    <span>Get in touch</span>
+  </div>
+
+  <p class="en-tag fade">— GET IN TOUCH —</p>
+  <h1 class="fade"><em>お問い合わせ</em></h1>
+  <p class="lede fade">
+    導入のご相談、デモのリクエスト、見積のご依頼<br>
+    その他ご質問はこちらから。<br>
+    通常 2 営業日以内にご返信します。
+  </p>
+
+  <div class="contact-row">
+    <form class="form fade" id="contact-form">
+      <div class="quote-preview" id="quote-preview">
+        <div class="qp-head">
+          <span>— Estimate from Demo —</span>
+          <span class="qp-line"></span>
+          <span>見積シミュレーター連携</span>
+        </div>
+        <dl id="quote-detail"></dl>
+      </div>
+
+      <div class="quote-empty" id="quote-empty">
+        <div class="qe-head">
+          <span>— Quick Tip —</span>
+          <span class="qe-line"></span>
+          <span>はじめての方へ</span>
+        </div>
+        <p>まずは <strong>デモ・見積シミュレーター</strong> で条件を試算してみませんか。<br>
+        撮影規模・地点数・納期を選ぶだけで概算が出て、<br>
+        その内容が <strong>このお問合せフォームに自動反映</strong>されます。<br>
+        「だいたいこのくらいで」というイメージを掴んでからの方が、<br>
+        より具体的なご相談が可能です。</p>
+        <a href="locahun3d_demo.html" class="qe-btn">見積を作成する →</a>
+      </div>
+      <div class="field">
+        <label>NAME / お名前</label>
+        <input type="text" id="f-name" name="name" required>
+      </div>
+      <div class="field">
+        <label>COMPANY / 会社名</label>
+        <input type="text" id="f-company" name="company">
+      </div>
+      <div class="field">
+        <label>EMAIL / メールアドレス</label>
+        <input type="email" id="f-email" name="email" required>
+      </div>
+      <div class="field">
+        <label>PHONE / 電話番号（任意）</label>
+        <input type="tel" id="f-phone" name="phone">
+      </div>
+      <div class="field full">
+        <label>SUBJECT / お問い合わせ種別</label>
+        <select id="f-subject" name="subject">
+          <option>導入のご相談</option>
+          <option>スタジオスキャンの依頼（スタジオ運営様）</option>
+          <option>見積依頼</option>
+          <option>取材・メディア</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label>MESSAGE / ご用件</label>
+        <textarea id="f-message" name="message" placeholder="プロジェクトの概要、撮影規模、希望時期などをお書きください。"></textarea>
+      </div>
+    </form>
+
+    <aside class="info fade">
+      <div class="block">
+        <span class="lbl">Direct</span>
+        <span class="v mono">contact@locahun3d.jp</span>
+        <p style="white-space:nowrap">フォームに入力しづらい場合は、こちらまで直接ご連絡ください。</p>
+      </div>
+      <div class="block">
+        <span class="lbl">Hours</span>
+        <span class="v">10:00 — 20:00 (JST)</span>
+        <p>返信・祝日は翌営業日以降となる可能性がございます。</p>
+      </div>
+      <div class="block">
+        <span class="lbl">Studio</span>
+        <span class="v">東京都渋谷区</span>
+        <p>打ち合わせは、対面・オンラインいずれも可能です。</p>
+      </div>
+      <div class="block">
+        <span class="lbl">Demo</span>
+        <p>すぐに試したい方は、<a href="locahun3d_demo.html" style="color:#ffb454">デモ・見積シミュレーター</a> から<br>サンプルシーンを取得できます。</p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Full-width below contact-row -->
+  <div class="emergency fade">
+    <span class="lbl">— Emergency / 緊急のご相談 —</span>
+    <p>撮影スケジュールが切迫し、緊急でご相談したい案件がございましたら、<br>こちらの電話までおかけください。</p>
+    <a class="phone" href="tel:08046230377">TEL : 080-4623-0377</a>
+    <p class="note">対応可能でしたらその場でお伺いします。<br>どうしても対応が難しい場合がございますので、<br>その場合はお問合せでご連絡いただけますと幸いです。</p>
+    <p class="creed">全ては、<em>妥協しない選択肢</em>を探すため。</p>
+    <p class="signature">— ロケハン3D 代表  Kou Nakamura</p>
+  </div>
+
+  <div class="submit-row fade">
+    <span class="privacy">送信前に <a href="#" style="color:#ffb454;text-decoration:underline">プライバシーポリシー</a> をご確認ください。</span>
+    <button class="btn" type="submit" form="contact-form">送信する →</button>
+  </div>
+
+  <div class="foot">
+    <span>CONTACT</span>
+    <span>P. 04 / 04</span>
+  </div>
+</section>
+
+<script>
+const io=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}},{threshold:.12});
+document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+// Quote integration — receive estimate data from demo page via URL params
+const params = new URLSearchParams(location.search);
+const quoteFields = [
+  ['scale',    'SCALE / 撮影規模'],
+  ['scan',     'SCAN / 地点数'],
+  ['method',   'METHOD / 取得方法'],
+  ['opt',      'OPTION / 撮影同行'],
+  ['date',     'SHOOT DATE / 撮影予定日'],
+  ['delivery', 'DELIVERY / 納品予定'],
+  ['price',    'PRICE / 概算']
+];
+const quoteData = {};
+quoteFields.forEach(([k])=>{ if(params.has(k) && params.get(k)) quoteData[k]=params.get(k); });
+
+if(Object.keys(quoteData).length){
+  const preview = document.getElementById('quote-preview');
+  const detail  = document.getElementById('quote-detail');
+  detail.innerHTML = quoteFields
+    .filter(([k])=>quoteData[k])
+    .map(([k,label])=>{
+      const isPrice = k==='price';
+      const v = quoteData[k];
+      return `<dt>${label}</dt><dd${isPrice?' class="qp-price"':''}>${isPrice && /[0-9]/.test(v) ? '¥ '+v : v}</dd>`;
+    }).join('');
+  preview.classList.add('show');
+  // Hide the empty-state guidance when an estimate is already present
+  document.getElementById('quote-empty').classList.add('hide');
+
+  // Pre-select 見積依頼 in subject
+  const subj = document.getElementById('f-subject');
+  for(const o of subj.options){ if(o.text==='見積依頼'){ subj.value=o.value||o.text; o.selected=true; break; } }
+
+  // Pre-fill message textarea with formatted estimate
+  const msg = document.getElementById('f-message');
+  const lines = ['【見積シミュレーターからの依頼】'];
+  quoteFields.forEach(([k,label])=>{ if(quoteData[k]) lines.push(`・${label}: ${quoteData[k]}`); });
+  lines.push('','--- ご要望をご記入ください ---','');
+  msg.value = lines.join('\n');
+}
+
+// Form submission — send email then navigate to manifesto page
+document.getElementById('contact-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const get = id => (document.getElementById(id).value || '').trim();
+  const subject = `【ロケハン3D】${get('f-subject')} - ${get('f-name')}様`;
+  const body = [
+    '■ お名前: '   + get('f-name'),
+    '■ 会社名: '   + (get('f-company') || '—'),
+    '■ メール: '   + get('f-email'),
+    '■ 電話番号: ' + (get('f-phone')   || '—'),
+    '■ 種別: '     + get('f-subject'),
+    '',
+    '──── ご用件 ────',
+    get('f-message') || '(本文なし)'
+  ].join('\n');
+  const mailto = 'mailto:contact@locahun3d.jp'
+    + '?subject=' + encodeURIComponent(subject)
+    + '&body='    + encodeURIComponent(body);
+  window.open(mailto, '_blank');
+  location.href = 'locahun3d_manifesto.html';
+});
+
+// Mobile hamburger nav
+const mToggle=document.getElementById('mToggle'),mNav=document.getElementById('mNav');
+function setMNav(open){
+  mToggle.classList.toggle('open',open);mNav.classList.toggle('open',open);
+  mToggle.setAttribute('aria-expanded',open?'true':'false');
+  mNav.setAttribute('aria-hidden',open?'false':'true');
+  document.body.style.overflow=open?'hidden':'';
+}
+mToggle.addEventListener('click',()=>setMNav(!mNav.classList.contains('open')));
+mNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMNav(false)));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')setMNav(false)});
+</script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ロケハン3D — オンラインロケハン・現場検証システム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400;700;900&family=Noto+Sans+JP:wght@200;300;400;600;700;900&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{--ink:#fafaf6;--bg:#000;--line:rgba(255,255,255,.18);--accent:#ffb454}
+html,body{height:100%;background:var(--bg);color:var(--ink);
+  font-family:'Noto Sans JP',ui-sans-serif,system-ui,sans-serif;font-weight:300;line-height:1.7;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:smooth}
+.serif{font-family:'Noto Serif JP',serif}
+.mono{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace}
+img{max-width:100%;display:block}
+
+/* film grain */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")}
+
+.frame{position:relative;min-height:100vh;display:flex;flex-direction:column;
+  padding-top:64px;padding-bottom:80px;
+  padding-left:max(48px, calc((100vw - 100vh * 4 / 3) / 2));
+  padding-right:max(48px, calc((100vw - 100vh * 4 / 3) / 2));overflow:hidden}
+
+/* letterbox bars */
+.frame.letterbox::before,.frame.letterbox::after{
+  content:'';position:absolute;left:0;right:0;background:#000;height:48px;z-index:2}
+.frame.letterbox::before{top:0}
+.frame.letterbox::after{bottom:0}
+
+.timecode{position:absolute;top:18px;font-size:.65em;letter-spacing:.2em;
+  font-family:'JetBrains Mono',monospace;opacity:.4;text-transform:uppercase}
+.timecode.tl{left:max(220px, calc((100vw - 100vh * 4 / 3) / 2))} .timecode.tr{right:max(48px, 6vw)}
+.timecode.bl{bottom:18px;top:auto;left:max(220px, calc((100vw - 100vh * 4 / 3) / 2))}
+.timecode.br{bottom:18px;top:auto;right:max(48px, 6vw)}
+@media(max-width:900px){.timecode.tl,.timecode.bl{left:max(48px, 6vw)}}
+
+/* side menu */
+.side-menu{position:fixed;top:50%;left:28px;transform:translateY(-50%);z-index:1100;
+  display:flex;flex-direction:column;gap:14px;background:none;border:none;padding:0;width:170px}
+.side-menu .brand-mini{font-family:'JetBrains Mono',monospace;font-size:.58em;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:10px;margin-bottom:4px;
+  display:flex;justify-content:space-between;align-items:center}
+.side-menu .brand-mini .dot{width:5px;height:5px;background:#ffb454;border-radius:50%;display:inline-block;animation:rec 1.6s ease-in-out infinite}
+@keyframes rec{0%,100%{opacity:1}50%{opacity:.25}}
+.side-menu nav{display:flex;flex-direction:column;gap:13px}
+.side-menu nav a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.78em;
+  letter-spacing:.04em;display:flex;align-items:center;gap:10px;font-weight:300;transition:color .2s,transform .2s}
+.side-menu nav a::before{content:'';width:6px;height:1px;background:currentColor;opacity:.6;transition:width .25s,background .2s,opacity .2s}
+.side-menu nav a:hover{color:#fff;transform:translateX(2px)}
+.side-menu nav a:hover::before{width:14px;background:#ffb454;opacity:1}
+.side-menu nav a.current{color:#fff;font-weight:600}
+.side-menu nav a.current::before{width:14px;background:#ffb454;opacity:1}
+@media(max-width:1199px){.side-menu{display:none}}
+
+/* ============================================
+   MOBILE NAV — hamburger toggle + drawer
+   ============================================ */
+.m-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1200;
+  width:46px;height:46px;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.22);cursor:pointer;
+  align-items:center;justify-content:center;flex-direction:column;gap:5px;padding:0}
+.m-toggle span{display:block;width:22px;height:1px;background:#fff;
+  transition:transform .3s,opacity .3s}
+.m-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.m-toggle.open span:nth-child(2){opacity:0}
+.m-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.m-nav{position:fixed;inset:0;z-index:1150;background:rgba(0,0,0,.96);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:96px 32px 32px;
+  display:flex;flex-direction:column;gap:6px;
+  opacity:0;pointer-events:none;transition:opacity .3s;overflow-y:auto}
+.m-nav.open{opacity:1;pointer-events:auto}
+.m-nav .m-brand{font-family:'JetBrains Mono',monospace;font-size:.7em;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:14px;margin-bottom:14px;
+  display:flex;justify-content:space-between;align-items:center}
+.m-nav .m-brand .dot{width:5px;height:5px;background:#ffb454;border-radius:50%;display:inline-block}
+.m-nav a{color:#fff;text-decoration:none;font-family:'Noto Serif JP',serif;font-weight:300;
+  font-size:1.4em;letter-spacing:.04em;padding:14px 0;
+  border-bottom:1px dotted rgba(255,255,255,.12);transition:color .2s,padding-left .2s}
+.m-nav a::before{content:'· ';color:rgba(255,255,255,.3);transition:color .2s}
+.m-nav a.current,.m-nav a:hover{color:#ffb454;padding-left:6px}
+.m-nav a.current::before,.m-nav a:hover::before{color:#ffb454}
+@media(min-width:1200px){.m-toggle,.m-nav{display:none!important}}
+@media(max-width:1199px){.m-toggle{display:flex}}
+
+/* ============================================
+   MOBILE — comprehensive overrides ≤ 760px
+   ============================================ */
+@media(max-width:900px){
+  .frame{padding-left:22px;padding-right:22px;padding-top:54px;padding-bottom:60px}
+  .frame.letterbox::before,.frame.letterbox::after{height:24px}
+  .timecode{display:none}
+  .foot{font-size:.55em;letter-spacing:.18em;padding-top:36px}
+
+  .leader{font-size:60vw}
+  .cs-tag{font-size:.6em;letter-spacing:.32em;margin-bottom:24px;gap:10px}
+  .cs-tag::before,.cs-tag::after{width:20px}
+  .cs-sub{font-size:clamp(.95em,4.5vw,1.2em);letter-spacing:.08em;margin-bottom:24px}
+  .cs-domain{font-size:clamp(2em,11vw,3em);letter-spacing:.04em;margin-bottom:8px}
+  .cs-coming{font-size:.85em;letter-spacing:.32em;margin-top:32px}
+  .cs-eta{font-size:.6em;letter-spacing:.28em;margin-bottom:32px}
+  .cs-features{margin:0 -10px}
+  .cs-features .f{padding:18px 14px;gap:6px}
+  .cs-features .f h6{font-size:.95em}
+  .cs-features .f p{font-size:.72em}
+  .cs-cta-row{margin-top:36px;gap:12px}
+  .cs-caption{font-size:.55em;letter-spacing:.22em}
+  .cs-cta{padding:14px 24px;min-width:auto;width:100%;max-width:300px;
+    font-size:.62em;letter-spacing:.22em}
+  .cs-cta:hover{letter-spacing:.26em}
+  .filmstrip{height:22px;background-size:14px 22px}
+}
+
+/* hero coming soon */
+.hero{justify-content:center;align-items:center;text-align:center}
+
+/* faint background leader number */
+.leader{position:absolute;font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:42vw;line-height:1;color:rgba(255,255,255,.022);
+  pointer-events:none;user-select:none;letter-spacing:-.05em;
+  top:50%;left:50%;transform:translate(-50%,-50%)}
+
+.cs-tag{font-family:'JetBrains Mono',monospace;font-size:.7em;letter-spacing:.5em;
+  text-transform:uppercase;opacity:.55;margin-bottom:38px;
+  display:inline-flex;align-items:center;gap:18px}
+.cs-tag::before,.cs-tag::after{content:'';width:36px;height:1px;background:currentColor;opacity:.55}
+.cs-tag .blink{width:7px;height:7px;background:var(--accent);border-radius:50%;
+  display:inline-block;animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(.7)}}
+
+.cs-sub{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(1.05em,1.6vw,1.45em);letter-spacing:.16em;line-height:1.85;
+  opacity:.78;margin-bottom:34px;text-wrap:balance}
+.cs-sub strong{font-weight:700;letter-spacing:.06em}
+
+.cs-domain{font-family:'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:clamp(2.6em,7.2vw,6.2em);letter-spacing:.06em;line-height:1.05;
+  margin-bottom:16px;display:inline-block;text-indent:.06em;
+  background:linear-gradient(180deg,#fff 0%,#e8e3d6 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  position:relative}
+.cs-domain .dot{color:var(--accent);-webkit-text-fill-color:var(--accent)}
+.cs-domain::after{content:'';position:absolute;left:50%;bottom:-18px;width:80px;height:1px;
+  background:rgba(255,255,255,.35);transform:translateX(-50%)}
+
+.cs-coming{font-family:'JetBrains Mono',monospace;font-size:clamp(.95em,1.3vw,1.1em);
+  letter-spacing:.5em;text-transform:uppercase;color:var(--accent);
+  margin-top:46px;margin-bottom:8px;text-indent:.5em}
+.cs-eta{font-family:'JetBrains Mono',monospace;font-size:.7em;letter-spacing:.4em;
+  text-transform:uppercase;opacity:.45;margin-bottom:54px;text-indent:.4em}
+
+.cs-features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:0;margin:0 auto;max-width:780px;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.cs-features .f{padding:26px 22px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:8px;text-align:center}
+.cs-features .f:last-child{border-right:none}
+.cs-features .f .ic{font-family:'JetBrains Mono',monospace;font-size:.62em;
+  letter-spacing:.3em;opacity:.5;text-transform:uppercase}
+.cs-features .f h6{font-family:'Noto Serif JP',serif;font-weight:400;
+  font-size:1.02em;line-height:1.55;letter-spacing:.04em}
+.cs-features .f p{font-size:.78em;line-height:1.7;opacity:.65}
+
+.cs-cta-row{margin-top:54px;display:flex;flex-direction:column;align-items:center;gap:14px;position:relative;z-index:5}
+.cs-caption{font-family:'JetBrains Mono',monospace;font-size:.6em;
+  letter-spacing:.3em;opacity:.45;text-transform:uppercase;margin-bottom:6px}
+.cs-cta{display:inline-block;padding:16px 36px;
+  border:1px solid rgba(255,255,255,.45);color:#fff;text-decoration:none;
+  font-family:'JetBrains Mono',monospace;font-size:.72em;letter-spacing:.3em;
+  text-transform:uppercase;transition:background .2s,color .2s,letter-spacing .2s;
+  min-width:280px;text-align:center}
+.cs-cta:hover{background:#fff;color:#000;letter-spacing:.36em}
+
+.foot{margin-top:auto;display:flex;justify-content:space-between;
+  font-family:'JetBrains Mono',monospace;font-size:.62em;letter-spacing:.25em;
+  text-transform:uppercase;opacity:.4;padding-top:60px}
+
+.fade{opacity:0;transform:translateY(20px);transition:opacity .9s ease, transform .9s ease}
+.fade.in{opacity:1;transform:none}
+
+/* filmstrip footer */
+.filmstrip{position:absolute;left:0;right:0;bottom:0;height:32px;
+  background-image:linear-gradient(90deg, #000 50%, transparent 50%);
+  background-size:18px 32px;background-repeat:repeat-x;
+  background-color:rgba(255,255,255,.04);z-index:1}
+
+@media(max-width:900px){
+  .cs-features{grid-template-columns:1fr}
+  .cs-features .f{border-right:none;border-bottom:1px solid var(--line)}
+  .cs-features .f:last-child{border-bottom:none}
+}
+</style>
+</head>
+<body>
+
+<aside class="side-menu">
+  <div class="brand-mini"><span>LOCAHUN 3D</span><span class="dot"></span></div>
+  <nav>
+    <a href="locahun3d_manifesto.html">マニフェスト</a>
+    <a href="locahun3d_data.html">データについて</a>
+    <a href="locahun3d_works.html">使用シチュエーション・実績</a>
+    <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
+    <a href="locahun3d_demo.html">デモ・見積</a>
+    <a href="locahun3d_online.html" class="current">ロケハン3Dの未来</a>
+    <a href="locahun3d_contact.html">お問い合わせ</a>
+  </nav>
+</aside>
+
+<button class="m-toggle" id="mToggle" aria-label="メニュー" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<aside class="m-nav" id="mNav" aria-hidden="true">
+  <div class="m-brand"><span>LOCAHUN 3D</span><span class="dot"></span></div>
+  <a href="locahun3d_manifesto.html">マニフェスト</a>
+  <a href="locahun3d_data.html">データについて</a>
+  <a href="locahun3d_works.html">使用シチュエーション・実績</a>
+  <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
+  <a href="locahun3d_demo.html">デモ・見積</a>
+  <a href="locahun3d_online.html" class="current">ロケハン3Dの未来</a>
+  <a href="locahun3d_contact.html">お問い合わせ</a>
+</aside>
+
+<section class="frame hero letterbox">
+  <span class="leader serif">∞</span>
+  <span class="timecode tl">REEL 06 — INT.SERVER — DAY</span>
+  <span class="timecode tr">2026 / LOCAHUN 3D</span>
+
+  <div class="cs-tag fade">
+    <span class="blink"></span>
+    <span>Coming Soon</span>
+    <span class="blink"></span>
+  </div>
+
+  <p class="cs-sub fade">
+    オンラインロケハン・<strong>現場検証システム</strong>
+  </p>
+
+  <h1 class="cs-domain fade">
+    ロケハン3D<span class="dot">.</span>com
+  </h1>
+
+  <div class="cs-coming fade">— Launching Soon —</div>
+  <div class="cs-eta fade">EST. 2027 — TEASER</div>
+
+  <div class="cs-features fade">
+    <div class="f">
+      <div class="ic">01 / CLOUD</div>
+      <h6>ブラウザで完結</h6>
+      <p>インストール不要。<br>URL ひとつでロケ地に入る。</p>
+    </div>
+    <div class="f">
+      <div class="ic">02 / REVIEW</div>
+      <h6>遠隔で現場検証</h6>
+      <p>監督・撮影・美術が、<br>同じ画を同時に覗く。</p>
+    </div>
+    <div class="f">
+      <div class="ic">03 / SHARE</div>
+      <h6>最適なスタジオ検索</h6>
+      <p>他スタジオと並べて web 上で検討。<br>プロジェクトを最速で進める。</p>
+    </div>
+  </div>
+
+  <div class="cs-cta-row fade">
+    <span class="cs-caption">— Stay tuned —</span>
+    <a class="cs-cta" href="locahun3d_contact.html">先行案内を希望する →</a>
+  </div>
+
+  <div class="foot">
+    <span>ONLINE ROKEHAN — TEASER</span>
+    <span>P. 05 / 06</span>
+  </div>
+  <span class="timecode bl">LOCAHUN 3D — ONLINE SCOUT</span>
+  <span class="timecode br">COMING SOON</span>
+  <div class="filmstrip"></div>
+</section>
+
+<script>
+const io = new IntersectionObserver((entries)=>{
+  for(const e of entries){
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  }
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+// Mobile hamburger nav
+const mToggle=document.getElementById('mToggle'),mNav=document.getElementById('mNav');
+function setMNav(open){
+  mToggle.classList.toggle('open',open);mNav.classList.toggle('open',open);
+  mToggle.setAttribute('aria-expanded',open?'true':'false');
+  mNav.setAttribute('aria-hidden',open?'false':'true');
+  document.body.style.overflow=open?'hidden':'';
+}
+mToggle.addEventListener('click',()=>setMNav(!mNav.classList.contains('open')));
+mNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMNav(false)));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')setMNav(false)});
+</script>
+
+</body>
+</html>

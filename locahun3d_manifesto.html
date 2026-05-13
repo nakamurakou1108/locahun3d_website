@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ロケハン3D — Manifesto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400;700;900&family=Noto+Sans+JP:wght@200;300;400;600;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{--ink:#fafaf6;--bg:#000;--line:rgba(255,255,255,.18);--accent:#ffb454}
+html,body{background:var(--bg);color:var(--ink);
+  font-family:'Noto Sans JP',ui-sans-serif,system-ui,sans-serif;font-weight:300;line-height:1.7;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:smooth}
+.serif{font-family:'Noto Serif JP',serif}
+.mono{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace}
+img{max-width:100%;display:block}
+
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")}
+
+.frame{position:relative;min-height:100vh;display:flex;flex-direction:column;
+  padding-top:64px;padding-bottom:80px;
+  padding-left:max(48px, calc((100vw - 100vh * 4 / 3) / 2));
+  padding-right:max(48px, calc((100vw - 100vh * 4 / 3) / 2));
+  overflow:hidden}
+
+/* Letterbox bars (hero only) */
+.frame.letterbox::before,
+.frame.letterbox::after{
+  content:'';position:absolute;left:0;right:0;background:#000;height:48px;z-index:2}
+.frame.letterbox::before{top:0}
+.frame.letterbox::after{bottom:0}
+
+/* Chapter rule */
+.chapter-rule{display:flex;align-items:baseline;gap:22px;
+  margin-bottom:60px;font-size:.78em;letter-spacing:.18em;text-transform:uppercase;}
+.chapter-rule .num{font-family:'JetBrains Mono',monospace;opacity:.6}
+.chapter-rule .line{flex:1;height:1px;background:currentColor;opacity:.25}
+
+/* Tiny corner labels (timecode style) */
+.timecode{position:absolute;top:18px;font-size:.65em;letter-spacing:.2em;
+  font-family:'JetBrains Mono',monospace;opacity:.4;text-transform:uppercase}
+.timecode.tl{left:max(220px, calc((100vw - 100vh * 4 / 3) / 2))}
+.timecode.tr{right:max(48px, 6vw)}
+.timecode.bl{bottom:18px;top:auto;left:max(220px, calc((100vw - 100vh * 4 / 3) / 2))}
+.timecode.br{bottom:18px;top:auto;right:max(48px, 6vw)}
+@media(max-width:900px){
+  .timecode.tl,.timecode.bl{left:max(48px, 6vw)}
+}
+
+/* ============================================
+   FRAME 1 — HERO
+   ============================================ */
+.hero{justify-content:center;align-items:center;text-align:center;background:#000}
+.hero .brand{position:absolute;top:18vh;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:.72em;letter-spacing:.6em;
+  opacity:.55;text-indent:.6em;white-space:nowrap}
+.hero .h-main{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(2.3em,5.6vw,5.4em);line-height:1.35;letter-spacing:.04em;
+  margin-bottom:48px;max-width:none;
+  display:flex;flex-direction:column;align-items:center;gap:.45em}
+.hero .h-main em{font-style:normal;font-weight:700}
+.hero .h-main .ln-s{font-size:.45em;font-weight:300;letter-spacing:.4em;
+  text-indent:.4em;opacity:.85;
+  display:inline-flex;align-items:center;gap:22px}
+.hero .h-main .ln-s::before,
+.hero .h-main .ln-s::after{content:'';width:48px;height:1px;background:currentColor;opacity:.5}
+.hero .h-main .ln-l{font-family:'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:1.15em;letter-spacing:-.01em;line-height:1;color:#fff}
+.hero .h-sub{font-size:clamp(.95em,1.3vw,1.15em);font-weight:300;
+  max-width:38ch;margin:0 auto;color:rgba(255,255,255,.78);letter-spacing:.04em;
+  text-wrap:balance}
+.hero .scroll-hint{position:absolute;bottom:62px;font-size:.7em;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.3em;opacity:.4;
+  animation:scrollPulse 2.2s ease-in-out infinite}
+@keyframes scrollPulse{
+  0%,100%{opacity:.25;transform:translateY(0)}
+  50%{opacity:.6;transform:translateY(6px)}
+}
+
+/* Hero countdown leader (film leader style numbers in background) */
+.leader{position:absolute;font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:38vw;line-height:1;color:rgba(255,255,255,.025);
+  pointer-events:none;user-select:none;letter-spacing:-.05em;
+  top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* ============================================
+   FRAME 2 — PROLOGUE
+   ============================================ */
+.prologue{justify-content:center;}
+.prologue .pull{font-family:'Noto Serif JP',serif;font-weight:200;font-style:italic;
+  font-size:clamp(1.5em,3.2vw,2.6em);line-height:1.55;letter-spacing:.02em;
+  max-width:24ch}
+.prologue .pull strong{font-weight:700;font-style:normal}
+.prologue .attribution{font-family:'JetBrains Mono',monospace;font-size:.7em;
+  letter-spacing:.3em;text-transform:uppercase;opacity:.55;margin-top:48px}
+
+/* ============================================
+   FRAME 3 — THE GAP
+   ============================================ */
+.col3{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;
+  margin-top:14vh}
+.col3 .item{padding-top:28px;border-top:1px solid var(--line)}
+.col3 .item .num{font-family:'JetBrains Mono',monospace;font-size:.72em;
+  letter-spacing:.3em;opacity:.5;margin-bottom:18px}
+.col3 .item h3{font-family:'Noto Serif JP',serif;font-weight:400;
+  font-size:1.6em;line-height:1.4;margin-bottom:14px;letter-spacing:.02em}
+.col3 .item p{font-size:.92em;color:rgba(255,255,255,.7);line-height:1.85}
+
+/* ============================================
+   FRAME 4 — THE METHOD (light)
+   ============================================ */
+.method-banner{margin:6vh 0 2vh;border:1px solid var(--line);overflow:hidden;
+  aspect-ratio:21/9;position:relative;background:#0a0a0a}
+.method-banner img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s}
+.method-banner:hover img{transform:scale(1.02)}
+.method-banner .cap{position:absolute;left:20px;bottom:14px;z-index:2;
+  font-family:'JetBrains Mono',monospace;font-size:.62em;letter-spacing:.3em;
+  text-transform:uppercase;color:rgba(255,255,255,.85)}
+.method-banner::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.55) 100%)}
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch;
+  margin-top:4vh;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.method-grid .step{padding:48px 40px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:18px;min-height:280px}
+.method-grid .step:nth-child(2),.method-grid .step:nth-child(4){border-right:none}
+.method-grid .step:nth-child(1),.method-grid .step:nth-child(2){border-bottom:1px solid var(--line)}
+.method-grid .step .num{font-family:'JetBrains Mono',monospace;font-size:1.6em;
+  font-weight:300;letter-spacing:0;opacity:.35}
+.method-grid .step h4{font-family:'Noto Serif JP',serif;font-weight:700;
+  font-size:1.5em;line-height:1.4;margin-top:auto}
+.method-grid .step p{font-size:.92em;line-height:1.8;opacity:.78}
+
+/* ============================================
+   FRAME 5 — THE TOOLS
+   ============================================ */
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  margin-top:8vh}
+.tools .tool{padding:0;border:1px solid var(--line);border-right:none;
+  border-bottom:none;display:flex;flex-direction:column;gap:0;min-height:240px;
+  overflow:hidden;position:relative}
+.tools .tool:nth-child(3n){border-right:1px solid var(--line)}
+.tools .tool:nth-last-child(-n+3){border-bottom:1px solid var(--line)}
+.tools .tool .tool-img{width:100%;aspect-ratio:16/10;overflow:hidden;
+  border-bottom:1px solid var(--line);background:#0a0a0a;position:relative}
+.tools .tool .tool-img img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .6s ease}
+.tools .tool:hover .tool-img img{transform:scale(1.04)}
+.tools .tool .tool-img::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.5) 100%)}
+.tools .tool .tool-body{padding:24px 28px 30px;display:flex;flex-direction:column;gap:12px}
+.tools .tool .ic{font-family:'JetBrains Mono',monospace;font-size:.72em;
+  letter-spacing:.3em;opacity:.5;text-transform:uppercase}
+.tools .tool h5{font-family:'Noto Serif JP',serif;font-size:1.15em;
+  font-weight:400;letter-spacing:.04em}
+.tools .tool p{font-size:.82em;line-height:1.75;opacity:.62}
+
+/* ============================================
+   FRAME 6 — OUTCOME (light)
+   ============================================ */
+.outcome-rows{display:flex;flex-direction:column;gap:0;margin-top:6vh}
+.outcome-rows .row{display:grid;grid-template-columns:120px 1fr 1fr;
+  align-items:center;gap:48px;padding:38px 0;border-bottom:1px solid var(--line)}
+.outcome-rows .row:first-child{border-top:1px solid var(--line)}
+.outcome-rows .row .role{font-family:'JetBrains Mono',monospace;font-size:.68em;
+  letter-spacing:.3em;text-transform:uppercase;opacity:.55}
+.outcome-rows .row h6{font-family:'Noto Serif JP',serif;font-weight:700;
+  font-size:1.25em;line-height:1.5;letter-spacing:.02em}
+.outcome-rows .row p{font-size:.9em;line-height:1.8;opacity:.78}
+
+/* ============================================
+   FRAME 7 — MANIFESTO
+   ============================================ */
+.manifesto{align-items:center;justify-content:center;text-align:center;background:#000}
+.manifesto .lines{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(1.4em,2.6vw,2.2em);line-height:2.3;letter-spacing:.04em;max-width:34ch}
+.manifesto .lines p{position:relative;padding:6px 0}
+.manifesto .lines p strong{font-weight:700}
+.manifesto .lines p::before{content:'';position:absolute;left:50%;bottom:0;
+  width:0;height:1px;background:rgba(255,255,255,.25);transform:translateX(-50%);
+  transition:width .8s}
+.manifesto .lines p:not(:last-child)::before{width:6em}
+
+/* ============================================
+   FRAME 8 — END FRAME
+   ============================================ */
+.end{justify-content:center;align-items:center;text-align:center;background:#000;
+  min-height:100vh}
+.end .marque{font-family:'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:clamp(2.6em,8vw,7em);letter-spacing:.18em;line-height:1.15;
+  margin-bottom:24px;text-indent:.18em;display:flex;align-items:center;justify-content:center}
+.end .tagline{font-family:'Noto Sans JP',sans-serif;font-weight:300;
+  font-size:clamp(.95em,1.25vw,1.15em);letter-spacing:.32em;line-height:2.1;
+  opacity:.85;margin-bottom:36px;text-align:center;text-indent:.32em}
+.end .marque em{font-style:normal;font-weight:700}
+.end .colophon{font-family:'JetBrains Mono',monospace;font-size:.7em;
+  letter-spacing:.3em;text-transform:uppercase;opacity:.55;line-height:2}
+.end .filmstrip{position:absolute;left:0;right:0;bottom:0;height:32px;
+  background-image:linear-gradient(90deg, #000 50%, transparent 50%);
+  background-size:18px 32px;background-repeat:repeat-x;
+  background-color:rgba(255,255,255,.04)}
+
+/* ============================================
+   COMMON: Footnote bottom-of-frame
+   ============================================ */
+.foot{margin-top:auto;display:flex;justify-content:space-between;
+  font-family:'JetBrains Mono',monospace;font-size:.62em;letter-spacing:.25em;
+  text-transform:uppercase;opacity:.4;padding-top:60px}
+
+.side-menu{position:fixed;top:50%;left:28px;transform:translateY(-50%);z-index:1100;
+  display:flex;flex-direction:column;gap:14px;background:none;border:none;padding:0;width:170px}
+.side-menu .brand-mini{font-family:'JetBrains Mono',monospace;font-size:.58em;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:10px;margin-bottom:4px;
+  display:flex;justify-content:space-between;align-items:center}
+.side-menu .brand-mini .dot{width:5px;height:5px;background:#ffb454;border-radius:50%;display:inline-block;animation:rec 1.6s ease-in-out infinite}
+@keyframes rec{0%,100%{opacity:1}50%{opacity:.25}}
+.side-menu nav{display:flex;flex-direction:column;gap:13px}
+.side-menu nav a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.78em;
+  letter-spacing:.04em;display:flex;align-items:center;gap:10px;font-weight:300;transition:color .2s,transform .2s}
+.side-menu nav a::before{content:'';width:6px;height:1px;background:currentColor;opacity:.6;transition:width .25s,background .2s,opacity .2s}
+.side-menu nav a:hover{color:#fff;transform:translateX(2px)}
+.side-menu nav a:hover::before{width:14px;background:#ffb454;opacity:1}
+.side-menu nav a.current{color:#fff;font-weight:600}
+.side-menu nav a.current::before{width:14px;background:#ffb454;opacity:1}
+@media(max-width:1199px){.side-menu{display:none}}
+
+/* CTA — contact + download buttons at END frame */
+.end .cta{display:inline-block;padding:16px 36px;
+  border:1px solid rgba(255,255,255,.45);color:#fff;text-decoration:none;
+  font-family:'JetBrains Mono',monospace;font-size:.72em;letter-spacing:.3em;
+  text-transform:uppercase;transition:background .2s,color .2s,letter-spacing .2s;
+  position:relative;z-index:5;min-width:280px;text-align:center}
+.end .cta:hover{background:#fff;color:#000;letter-spacing:.36em}
+.end .cta.cta-alt{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.85)}
+.end .cta.cta-alt:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.5)}
+.end .cta-row{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:42px;position:relative;z-index:5}
+.end .cta-caption{font-family:'JetBrains Mono',monospace;font-size:.6em;
+  letter-spacing:.3em;opacity:.45;text-transform:uppercase;margin-bottom:6px}
+
+/* Soft fade-in on scroll */
+.fade{opacity:0;transform:translateY(24px);transition:opacity .9s ease, transform .9s ease}
+.fade.in{opacity:1;transform:none}
+
+/* Lightbox — click any embedded image to view full-size */
+.tools .tool .tool-img,
+.method-banner,
+.section-img,
+.cell-img{cursor:zoom-in}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:99999;
+  display:none;align-items:center;justify-content:center;cursor:zoom-out;
+  opacity:0;transition:opacity .25s;padding:48px}
+.lightbox.open{display:flex;opacity:1}
+.lightbox img{max-width:100%;max-height:100%;object-fit:contain;
+  box-shadow:0 0 100px rgba(0,0,0,.7);user-select:none}
+.lightbox .close{position:absolute;top:24px;right:28px;color:#fff;
+  font-family:'JetBrains Mono',monospace;font-size:.7em;letter-spacing:.3em;
+  text-transform:uppercase;cursor:pointer;opacity:.6;transition:opacity .2s;
+  background:none;border:1px solid rgba(255,255,255,.3);padding:10px 16px}
+.lightbox .close:hover{opacity:1;background:rgba(255,255,255,.08)}
+.lightbox .caption{position:absolute;bottom:24px;left:0;right:0;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:.65em;letter-spacing:.3em;
+  text-transform:uppercase;color:rgba(255,255,255,.55)}
+
+/* Responsive trims */
+@media(max-width:900px){
+  .col3,.tools{grid-template-columns:1fr;gap:0}
+  .col3 .item{padding:28px 0;border-top:1px solid var(--line)}
+  .tools .tool{border-right:1px solid var(--line);border-bottom:none}
+  .tools .tool:last-child{border-bottom:1px solid var(--line)}
+  .method-grid{grid-template-columns:1fr}
+  .method-grid .step{border-right:none;border-bottom:1px solid var(--line-d)}
+  .method-grid .step:last-child{border-bottom:none}
+  .outcome-rows .row{grid-template-columns:1fr;gap:14px}
+}
+
+/* ============================================
+   MOBILE NAV — hamburger toggle + drawer
+   ============================================ */
+.m-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1200;
+  width:46px;height:46px;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.22);cursor:pointer;
+  align-items:center;justify-content:center;flex-direction:column;gap:5px;padding:0}
+.m-toggle span{display:block;width:22px;height:1px;background:#fff;
+  transition:transform .3s,opacity .3s}
+.m-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.m-toggle.open span:nth-child(2){opacity:0}
+.m-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+.m-nav{position:fixed;inset:0;z-index:1150;background:rgba(0,0,0,.96);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:96px 32px 32px;
+  display:flex;flex-direction:column;gap:6px;
+  opacity:0;pointer-events:none;transition:opacity .3s}
+.m-nav.open{opacity:1;pointer-events:auto}
+.m-nav .m-brand{font-family:'JetBrains Mono',monospace;font-size:.7em;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:14px;margin-bottom:14px;
+  display:flex;justify-content:space-between;align-items:center}
+.m-nav .m-brand .dot{width:5px;height:5px;background:var(--accent);border-radius:50%;display:inline-block}
+.m-nav a{color:#fff;text-decoration:none;font-family:'Noto Serif JP',serif;font-weight:300;
+  font-size:1.4em;letter-spacing:.04em;padding:14px 0;
+  border-bottom:1px dotted rgba(255,255,255,.12);transition:color .2s,padding-left .2s}
+.m-nav a::before{content:'· ';color:rgba(255,255,255,.3);transition:color .2s}
+.m-nav a.current,.m-nav a:hover{color:var(--accent);padding-left:6px}
+.m-nav a.current::before,.m-nav a:hover::before{color:var(--accent)}
+@media(min-width:1200px){.m-toggle,.m-nav{display:none!important}}
+@media(max-width:1199px){.m-toggle{display:flex}}
+
+/* ============================================
+   MOBILE — comprehensive overrides ≤ 760px
+   ============================================ */
+@media(max-width:900px){
+  /* Frame padding & timecode (decorative — hide on mobile) */
+  .frame{padding-left:22px;padding-right:22px;padding-top:54px;padding-bottom:60px}
+  .frame.letterbox::before,.frame.letterbox::after{height:24px}
+  .timecode{display:none}
+  .chapter-rule{margin-bottom:36px;font-size:.62em;gap:14px}
+  .foot{font-size:.55em;letter-spacing:.18em;padding-top:36px}
+
+  /* HERO */
+  .hero .brand{position:static;transform:none;margin-bottom:36px;font-size:.6em;
+    letter-spacing:.4em;text-indent:.4em;white-space:normal;line-height:1.6}
+  .hero .h-main{font-size:clamp(1.6em,8vw,2.4em);gap:.32em;margin-bottom:32px;line-height:1.4}
+  .hero .h-main em{font-weight:700}
+  .hero .h-main .ln-s{font-size:.55em;letter-spacing:.28em;gap:12px}
+  .hero .h-main .ln-s::before,.hero .h-main .ln-s::after{width:24px}
+  .hero .h-main .ln-l{font-size:1em;letter-spacing:0}
+  .hero .h-sub{font-size:.92em;line-height:1.85;padding:0 8px;max-width:32ch}
+  .hero .scroll-hint{bottom:32px;font-size:.6em;letter-spacing:.25em}
+  .leader{font-size:60vw}
+
+  /* PROLOGUE / Other text-heavy sections */
+  .prologue .pull{font-size:clamp(1.2em,5vw,1.8em);line-height:1.65;max-width:24ch}
+  .prologue .attribution{font-size:.62em;letter-spacing:.22em;margin-top:32px}
+
+  /* THE GAP / col3 — h2 (force wrapping by removing nowrap) */
+  .col3{margin-top:6vh;gap:0}
+  .col3 .item{padding:28px 0 24px}
+  .col3 .item h3{font-size:1.25em;margin-bottom:10px}
+  .col3 .item p{font-size:.86em;line-height:1.85}
+  /* Override any inline white-space:nowrap on big serif headings */
+  .frame h2[style*="nowrap"]{white-space:normal!important;font-size:clamp(1.3em,5.5vw,1.8em)!important;line-height:1.55!important}
+
+  /* THE METHOD */
+  .method-banner{aspect-ratio:16/10;margin-top:4vh}
+  .method-grid .step{padding:30px 22px;min-height:auto;gap:14px}
+  .method-grid .step .num{font-size:1.3em}
+  .method-grid .step h4{font-size:1.2em;margin-top:0}
+  .method-grid .step p{font-size:.86em;line-height:1.85}
+
+  /* TOOLS */
+  .tools{margin-top:6vh}
+  .tools .tool{min-height:auto}
+  .tools .tool .tool-img{aspect-ratio:16/9}
+  .tools .tool .tool-body{padding:18px 20px 22px}
+  .tools .tool h5{font-size:1.05em}
+  .tools .tool p{font-size:.78em}
+
+  /* OUTCOME rows */
+  .outcome-rows{margin-top:4vh}
+  .outcome-rows .row{padding:24px 0}
+  .outcome-rows .row .role{font-size:.62em;letter-spacing:.22em}
+  .outcome-rows .row h6{font-size:1.05em;line-height:1.5}
+  .outcome-rows .row p{font-size:.84em;line-height:1.85}
+
+  /* MANIFESTO frame */
+  .manifesto .lines{font-size:clamp(1.05em,5vw,1.5em);line-height:2;max-width:30ch}
+  .manifesto .lines p:not(:last-child)::before{width:4em}
+
+  /* END frame */
+  .end{padding-top:80px;padding-bottom:80px}
+  .end .marque{font-size:clamp(1.9em,11vw,3em);letter-spacing:.1em;margin-bottom:18px;text-indent:.1em}
+  .end .tagline{font-size:.78em;letter-spacing:.2em;line-height:1.85;margin-bottom:28px;text-indent:.2em}
+  .end .colophon{font-size:.6em;letter-spacing:.22em}
+  .end .filmstrip{height:22px;background-size:14px 22px}
+  .end .cta{padding:14px 24px;min-width:auto;width:100%;max-width:300px;
+    font-size:.65em;letter-spacing:.24em}
+  .end .cta:hover{letter-spacing:.28em}
+  .end .cta-row{margin-top:32px;gap:12px;width:100%;align-items:center}
+  .end .cta-caption{font-size:.55em;letter-spacing:.22em}
+}
+</style>
+</head>
+<body>
+
+<!-- Left side menu (desktop) -->
+<aside class="side-menu">
+  <div class="brand-mini"><span>LOCAHUN 3D</span><span class="dot"></span></div>
+  <nav>
+    <a href="locahun3d_manifesto.html" class="current">マニフェスト</a>
+    <a href="locahun3d_data.html">データについて</a>
+    <a href="locahun3d_works.html">使用シチュエーション・実績</a>
+    <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
+    <a href="locahun3d_demo.html">デモ・見積</a>
+    <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+    <a href="locahun3d_contact.html">お問い合わせ</a>
+  </nav>
+</aside>
+
+<!-- Mobile hamburger toggle (≤ 900px) -->
+<button class="m-toggle" id="mToggle" aria-label="メニュー" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- Mobile slide-in drawer -->
+<aside class="m-nav" id="mNav" aria-hidden="true">
+  <div class="m-brand"><span>LOCAHUN 3D</span><span class="dot"></span></div>
+  <a href="locahun3d_manifesto.html" class="current">マニフェスト</a>
+  <a href="locahun3d_data.html">データについて</a>
+  <a href="locahun3d_works.html">使用シチュエーション・実績</a>
+  <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
+  <a href="locahun3d_demo.html">デモ・見積</a>
+  <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+  <a href="locahun3d_contact.html">お問い合わせ</a>
+</aside>
+
+
+<!-- ===== FRAME 1 — HERO ===== -->
+<section class="frame hero letterbox" id="f1">
+  <span class="leader serif">3</span>
+  <span class="timecode tl">REEL 01 — INT.STUDIO — DAY</span>
+  <span class="timecode tr">2026 / LOCAHUN 3D</span>
+
+  <div class="brand">L · O · C · A · H · U · N &nbsp;&nbsp;&nbsp; 3 D</div>
+
+  <h1 class="h-main">
+    <span class="ln-s">全ては</span>
+    <span class="ln-l">一歩先の</span>
+    <span class="ln-l">クリエイティブ</span>
+    <span class="ln-s">のために</span>
+  </h1>
+  <p class="h-sub">
+    撮影準備の精度を高め、届かなかった&ldquo;一歩先&rdquo;の発想と創造をアシストする。
+  </p>
+
+  <div class="scroll-hint">↓ &nbsp; SCROLL</div>
+  <span class="timecode bl">LOCAHUN 3D — LOCATION SCOUT</span>
+  <span class="timecode br">EST. 2026</span>
+</section>
+
+<!-- ===== FRAME 2 — THE GAP ===== -->
+<section class="frame" id="f3">
+  <span class="timecode tl">CHAPTER 01</span>
+  <span class="timecode tr">00:01:00</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">CH. 01</span>
+    <span class="line"></span>
+    <span>The Gap — 届かなかった一歩</span>
+  </div>
+
+  <div style="max-width:62ch">
+    <h2 class="serif fade" style="font-size:clamp(1.6em,2.7vw,2.3em);font-weight:300;line-height:1.7;letter-spacing:.02em;white-space:nowrap">
+      <em style="font-style:normal;font-weight:700">あと一歩で生まれなかった表現</em>が、<br>
+      撮影後の現場には残されていました。
+    </h2>
+  </div>
+
+  <div class="col3">
+    <div class="item fade">
+      <div class="num">01 / SCOUT</div>
+      <h3>制約によって試せなかった表現</h3>
+      <p>写真と記憶だけで構図を決めると、本番でレンズを覗いた瞬間、想定と違う角度・距離・抜けに気づく。撮り直しか、妥協か、いつも二択。</p>
+    </div>
+    <div class="item fade">
+      <div class="num">02 / SHARE</div>
+      <h3>リソース不足で起きる行き違い</h3>
+      <p>監督・撮影・美術・プロデューサー間で「どんな画になるか」を口頭やラフだけで伝えるのは限界がある。誰かの解像度がボトルネックになる。</p>
+    </div>
+    <div class="item fade">
+      <div class="num">03 / TIME</div>
+      <h3>時間の制約</h3>
+      <p>本来やりたい検証 ─ 焦点距離、立ち位置、光の方向 ─ は山ほどあるのに、現場で試す時間は分単位。ほとんどの可能性が試されないまま消える。</p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>THE GAP</span>
+    <span>P. 02 / 07</span>
+  </div>
+</section>
+
+<!-- ===== FRAME 4 — THE METHOD ===== -->
+<section class="frame" id="f4">
+  <span class="timecode tl">CHAPTER 02</span>
+  <span class="timecode tr">00:02:00</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">CH. 02</span>
+    <span class="line"></span>
+    <span>The Method — 撮影準備の再発明</span>
+  </div>
+
+  <div style="max-width:62ch">
+    <h2 class="serif fade" style="font-size:clamp(1.8em,3vw,2.6em);font-weight:300;line-height:1.5;letter-spacing:.02em;white-space:nowrap">
+      ロケ地を、<em style="font-style:normal;font-weight:700">3D空間ごと</em>持ち帰る。<br>
+      <span style="font-size:.55em;font-weight:300;letter-spacing:.04em;opacity:.85;display:inline-block;margin-top:18px;line-height:1.7">
+        3DGS 撮影サービス &amp;<br>
+        オフライン環境対応のデジタル Web アプリケーション提供
+      </span>
+    </h2>
+    <p class="fade" style="font-size:1.02em;margin-top:24px;max-width:none;opacity:.78;line-height:1.95">
+      3D Gaussian Splatting で取得した実空間を、ロケハン3Dに持ち込む。<br>
+      仮想カメラで角度・焦点距離・センサーを試し、届かなかった一歩を、机の上で先取りする。
+    </p>
+  </div>
+
+  <figure class="method-banner fade">
+    <img src="assets/Digiloke_Pcloud_Demo.jpg" alt="ロケ地を 3D 空間ごと持ち帰る">
+    <figcaption class="cap">— 3DGS · POINT CLOUD SCAN</figcaption>
+  </figure>
+
+  <div class="method-grid">
+    <div class="step fade">
+      <div class="num">01</div>
+      <h4 class="serif">SCAN.<br>現場を持ち帰る</h4>
+      <p>PortalCam ほか各種 3DGS スキャンを、そのままドラッグ&ドロップで読み込み。<br>広域ロケや屋内、手の届かないアングルまで、現実そのままが手元に。</p>
+    </div>
+    <div class="step fade">
+      <div class="num">02</div>
+      <h4 class="serif">FRAME.<br>レンズで覗く</h4>
+      <p>センサーサイズと焦点距離から実機と一致する画角で構図を作る。<br>ARRI、RED、シグネチャープライム ─ 想定機材のセットアップを忠実に再現。</p>
+    </div>
+    <div class="step fade">
+      <div class="num">03</div>
+      <h4 class="serif">SHARE.<br>画を渡す</h4>
+      <p>JPEG にメタデータをバーンイン。撮影日時・座標・レンズ情報・ショット番号 ─<br>監督が見て、現場でそのまま再現できる粒度で配布。</p>
+    </div>
+    <div class="step fade">
+      <div class="num">04</div>
+      <h4 class="serif">SALVAGE.<br>位置を呼び戻す</h4>
+      <p>過去のショット JPEG をドロップすれば、当時のカメラ位置・角度・全設定が即座に蘇る。<br>撮り直し、リテイク、続編 ─ 何度でも同じ場所へ。</p>
+    </div>
+  </div>
+
+  <div class="tools" style="margin-top:4vh">
+    <div class="tool fade">
+      <div class="tool-img"><img src="assets/Digiloke_CamView1_Demo.png" alt="仮想カメラ"></div>
+      <div class="tool-body">
+        <div class="ic">05 / CAMERA</div>
+        <h5>仮想カメラ</h5>
+        <p>センサー / 焦点距離 / アスペクト / WB / パン・ティルト・ロール。<br>実機と等価のレンズシミュレーション。</p>
+      </div>
+    </div>
+    <div class="tool fade">
+      <div class="tool-img"><img src="assets/Digiloke_Sokutei_Demo.png" alt="距離測定"></div>
+      <div class="tool-body">
+        <div class="ic">06 / MEASURE</div>
+        <h5>距離測定</h5>
+        <p>splat 表面に正確スナップ。<br>最大 200 万点キャッシュで、大規模シーンでも現実通りの寸法。</p>
+      </div>
+    </div>
+    <div class="tool fade">
+      <div class="tool-img"><img src="assets/Digiloke_Lighting_Demo.png" alt="環境ライティング"></div>
+      <div class="tool-body">
+        <div class="ic">07 / LIGHTING</div>
+        <h5>環境ライティング</h5>
+        <p>朝・昼・夕方・夜・雨。<br>シーン全体を疑似 HDRI で再着色し、時間帯ごとの絵を即座に検証。</p>
+      </div>
+    </div>
+    <div class="tool fade">
+      <div class="tool-img"><img src="assets/Digiloke_CamView_Demo.png" alt="構図グリッド"></div>
+      <div class="tool-body">
+        <div class="ic">08 / GRID</div>
+        <h5>構図グリッド</h5>
+        <p>三分割・黄金・対角・AE 互換セーフ・カスタム。<br>複数同時オーバーレイ可。</p>
+      </div>
+    </div>
+    <div class="tool fade">
+      <div class="tool-img"><img src="assets/Digiloke_NightView3_Demo.jpg" alt="FHD バーンイン"></div>
+      <div class="tool-body">
+        <div class="ic">09 / BURN-IN</div>
+        <h5>FHD バーンイン</h5>
+        <p>1920×1080 標準で書き出し。<br>メタ情報を画像外フレームに整然と配置、画は損なわない。</p>
+      </div>
+    </div>
+    <div class="tool fade">
+      <div class="tool-img"><img src="assets/Digiloke_salvage_Demo.png" alt="位置サルベージ"></div>
+      <div class="tool-body">
+        <div class="ic">10 / SALVAGE</div>
+        <h5>位置サルベージ</h5>
+        <p>過去 JPEG から位置・角度・設定を完全復元。<br>プロジェクトのどの段階でも、決定打を呼び戻せる。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>METHOD &amp; TOOLS</span>
+    <span>P. 03 / 06</span>
+  </div>
+</section>
+
+<!-- ===== FRAME 6 — OUTCOME ===== -->
+<section class="frame" id="f6">
+  <!-- (was previously class="light"; unified to dark) -->
+  <span class="timecode tl">CHAPTER 03</span>
+  <span class="timecode tr">00:03:00</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">CH. 03</span>
+    <span class="line"></span>
+    <span>The Outcome — 現場で起こること</span>
+  </div>
+
+  <div style="max-width:60ch">
+    <h2 class="serif fade" style="font-size:clamp(1.8em,3vw,2.6em);font-weight:300;line-height:1.5;letter-spacing:.02em">
+      画角チェックを<em style="font-style:normal;font-weight:700">デジタル</em>で試行する
+    </h2>
+  </div>
+
+  <div class="outcome-rows">
+    <div class="row fade">
+      <div class="role">DIRECTOR</div>
+      <h6>絵を、言葉ではなく画で渡せる</h6>
+      <p>カット割り・構図・カメラ位置を、撮影前にスタッフ全員と同じ画で共有。<br>指示の解像度が上がり、撮影本番に「想定外の画」が減る。</p>
+    </div>
+    <div class="row fade">
+      <div class="role">D.O.P.</div>
+      <h6>レンズ選びが、机の上で終わる</h6>
+      <p>14 / 24 / 35 / 50 / 85mm — 現場で全部試す時間はない。<br>ロケハン3Dで先に絞り込み、当日は撮影に集中。</p>
+    </div>
+    <div class="row fade">
+      <div class="role">PRODUCER</div>
+      <h6>提案資料が現場とつながる</h6>
+      <p>クライアントへのピッチ、香盤の根拠、ロケハン報告 —<br>メタ付き JPEG が、説明より早く、議論より強い。</p>
+    </div>
+    <div class="row fade">
+      <div class="role">A. D.</div>
+      <h6>ロケハンが、繰り返せる作業になる</h6>
+      <p>過去ショットの JPEG をドロップすれば同じ場所に戻れる。<br>引き継ぎも、リテイクも、続編も、迷わない。</p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>THE OUTCOME</span>
+    <span>P. 04 / 06</span>
+  </div>
+</section>
+
+<!-- ===== FRAME 7 — MANIFESTO ===== -->
+<section class="frame manifesto" id="f7">
+  <span class="timecode tl">EPILOGUE</span>
+  <span class="timecode tr">00:04:00</span>
+
+  <div class="lines">
+    <p class="fade">準備は、創造の<strong>燃料</strong>だ。</p>
+    <p class="fade">届かなかった一歩の、<br>その<strong>先へ</strong>。</p>
+    <p class="fade">全ては、突き抜けた、<br><strong>価値のあるクリエイティブ</strong>のために。</p>
+  </div>
+</section>
+
+<!-- ===== FRAME 8 — END FRAME ===== -->
+<section class="frame end" id="f8">
+  <span class="timecode tl">END FRAME</span>
+  <span class="timecode tr">00:05:00</span>
+
+  <div class="marque fade">
+    ロケハン3D
+  </div>
+  <div class="tagline fade">
+    3D スキャン撮影・Web ビューアー<br>
+    開発提供システム
+  </div>
+  <div class="colophon fade">
+    LOCAHUN 3D — LOCATION SCOUT<br>
+    A TOOL FOR PRECISE PRE-PRODUCTION<br>
+    — EST. MMXXVI —
+  </div>
+
+  <div class="cta-row fade">
+    <span class="cta-caption">— Get started —</span>
+    <a class="cta" href="locahun3d_contact.html">お問い合わせ →</a>
+    <a class="cta cta-alt" href="demo_scene.zip" download>デモシーンをダウンロード ↓</a>
+  </div>
+
+  <div class="filmstrip"></div>
+</section>
+
+<script>
+// Soft fade-in on scroll
+const io = new IntersectionObserver((entries)=>{
+  for(const e of entries){
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  }
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+// Lightbox — click any embedded image to view full-size (no trimming)
+(function initLightbox(){
+  const lb = document.createElement('div');
+  lb.className = 'lightbox';
+  lb.innerHTML = '<button class="close" type="button">CLOSE [esc]</button><img alt=""><div class="caption"></div>';
+  document.body.appendChild(lb);
+  const lbImg = lb.querySelector('img');
+  const lbCap = lb.querySelector('.caption');
+  const open = (src, cap)=>{lbImg.src=src;lbCap.textContent=cap||'';lb.classList.add('open');document.body.style.overflow='hidden'};
+  const close = ()=>{lb.classList.remove('open');document.body.style.overflow=''};
+  document.querySelectorAll('.tools .tool-img img, .method-banner img, .section-img img, .cell-img img').forEach(img=>{
+    img.style.cursor='zoom-in';
+    img.addEventListener('click', e=>{e.stopPropagation();open(img.src, img.alt)});
+  });
+  lb.addEventListener('click', close);
+  document.addEventListener('keydown', e=>{if(e.key==='Escape') close()});
+})();
+
+// Flip side-menu color when over a light frame
+const sideMenu = document.querySelector('.side-menu');
+const frames = document.querySelectorAll('.frame');
+const fio = new IntersectionObserver((entries)=>{
+  for(const e of entries){
+    if(e.isIntersecting){
+      const isLight = e.target.classList.contains('light');
+      if(sideMenu) sideMenu.classList.toggle('dark-frame', isLight);
+    }
+  }
+}, { rootMargin: '-40% 0px -40% 0px' });
+frames.forEach(f => fio.observe(f));
+
+// Mobile hamburger nav
+const mToggle = document.getElementById('mToggle');
+const mNav    = document.getElementById('mNav');
+function setMNav(open){
+  mToggle.classList.toggle('open', open);
+  mNav.classList.toggle('open', open);
+  mToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  mNav.setAttribute('aria-hidden', open ? 'false' : 'true');
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+mToggle.addEventListener('click', () => setMNav(!mNav.classList.contains('open')));
+mNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMNav(false)));
+document.addEventListener('keydown', e => { if(e.key === 'Escape') setMNav(false); });
+</script>
+
+</body>
+</html>
