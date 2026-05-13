@@ -23,9 +23,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 
 .frame{position:relative;min-height:100vh;display:flex;flex-direction:column;
   padding-top:64px;padding-bottom:80px;
-  padding-left:max(220px, calc((100vw - 100vh * 4 / 3) / 2));
+  padding-left:max(48px, calc((100vw - 100vh * 4 / 3) / 2));
   padding-right:max(48px, calc((100vw - 100vh * 4 / 3) / 2));overflow:hidden}
-@media(max-width:900px){.frame{padding-left:max(48px,6vw)}}
+@media(max-width:900px){.frame{padding-left:22px;padding-right:22px}}
 
 .frame.letterbox::before,.frame.letterbox::after{
   content:'';position:absolute;left:0;right:0;background:#000;height:48px;z-index:2;pointer-events:none}
@@ -263,6 +263,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   text-transform:uppercase;opacity:.4;padding-top:60px}
 .fade{opacity:0;transform:translateY(20px);transition:opacity .9s ease,transform .9s ease}
 .fade.in{opacity:1;transform:none}
+/* mobile-scale 1.2x + overflow guard */
+(max-width:900px){
+  html{font-size:120%}
+  body{overflow-x:hidden}
+  .field select,.field input,.field textarea{font-size:1em}
+}
 </style>
 </head>
 <body>
@@ -272,9 +278,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <nav>
     <a href="locahun3d_manifesto.html">マニフェスト</a>
     <a href="locahun3d_data.html">データについて</a>
-    <a href="locahun3d_works.html">使用シチュエーション・実績</a>
     <a href="locahun3d_pitch_hub.html" class="current">分野ごとの活用</a>
-    <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+    <a href="locahun3d_online.html">ロケハン3Dの未来・実績</a>
     <a href="locahun3d_demo.html">デモ・見積</a>
     <a href="locahun3d_contact.html">お問い合わせ</a>
   </nav>
@@ -287,9 +292,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <div class="m-brand"><span>LOCAHUN 3D</span><span class="dot"></span></div>
   <a href="locahun3d_manifesto.html">マニフェスト</a>
   <a href="locahun3d_data.html">データについて</a>
-  <a href="locahun3d_works.html">使用シチュエーション・実績</a>
   <a href="locahun3d_pitch_hub.html" class="current">分野ごとの活用</a>
-  <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+  <a href="locahun3d_online.html">ロケハン3Dの未来・実績</a>
   <a href="locahun3d_demo.html">デモ・見積</a>
   <a href="locahun3d_contact.html">お問い合わせ</a>
 </aside>

@@ -111,8 +111,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   .est{margin-top:6vh;padding-top:32px}
   .est h2{font-size:clamp(1.3em,5.5vw,1.8em);line-height:1.55}
   .est .sub{font-size:.82em}
-  .form{gap:18px 0;margin-top:24px}
-  .field label{font-size:.58em;letter-spacing:.22em}
+  .form{grid-template-columns:1fr;gap:18px 0;margin-top:24px}
+  .field{min-width:0}
+  .field label{font-size:.58em;letter-spacing:.18em;overflow-wrap:anywhere;word-break:break-word}
 
   .result{padding:22px 20px;margin-top:32px;gap:16px}
   .result .price{font-size:1.7em}
@@ -289,6 +290,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   .demo-row,.form{grid-template-columns:1fr}
   .result{grid-template-columns:1fr}
 }
+/* mobile-scale 1.2x + overflow guard */
+(max-width:900px){
+  html{font-size:120%}
+  body{overflow-x:hidden}
+  .field select,.field input,.field textarea{font-size:1em}
+}
 </style>
 </head>
 <body>
@@ -298,9 +305,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <nav>
     <a href="locahun3d_manifesto.html">マニフェスト</a>
     <a href="locahun3d_data.html">データについて</a>
-    <a href="locahun3d_works.html">使用シチュエーション・実績</a>
     <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
-    <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+    <a href="locahun3d_online.html">ロケハン3Dの未来・実績</a>
     <a href="locahun3d_demo.html" class="current">デモ・見積</a>
     <a href="locahun3d_contact.html">お問い合わせ</a>
   </nav>
@@ -313,9 +319,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <div class="m-brand"><span>LOCAHUN 3D</span><span class="dot"></span></div>
   <a href="locahun3d_manifesto.html">マニフェスト</a>
   <a href="locahun3d_data.html">データについて</a>
-  <a href="locahun3d_works.html">使用シチュエーション・実績</a>
   <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
-  <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+  <a href="locahun3d_online.html">ロケハン3Dの未来・実績</a>
   <a href="locahun3d_demo.html" class="current">デモ・見積</a>
   <a href="locahun3d_contact.html">お問い合わせ</a>
 </aside>

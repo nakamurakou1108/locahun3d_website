@@ -187,6 +187,41 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .fade{opacity:0;transform:translateY(20px);transition:opacity .9s ease, transform .9s ease}
 .fade.in{opacity:1;transform:none}
 
+/* chapter rule (used by Selected Works frame) */
+.chapter-rule{display:flex;align-items:baseline;gap:22px;margin-bottom:60px;
+  font-size:.78em;letter-spacing:.18em;text-transform:uppercase}
+.chapter-rule .num{font-family:'JetBrains Mono',monospace;opacity:.6}
+.chapter-rule .line{flex:1;height:1px;background:currentColor;opacity:.25}
+
+/* Selected Works — Coming Soon (migrated from works.html) */
+.sw-block{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:10vh 0;gap:20px;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:4vh;
+  position:relative;overflow:hidden}
+.sw-block::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(255,180,84,.04) 0%,transparent 60%);pointer-events:none}
+.sw-block .sw-lbl{font-family:'JetBrains Mono',monospace;font-size:.7em;
+  letter-spacing:.5em;text-transform:uppercase;opacity:.55;text-indent:.5em}
+.sw-block .sw-title{font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(3em,7vw,5.5em);letter-spacing:.18em;line-height:1.1;margin:6px 0;
+  text-indent:.18em}
+.sw-block .sw-msg{font-size:1em;line-height:2;opacity:.78;max-width:48ch;
+  text-wrap:balance}
+.sw-block .sw-btn{margin-top:20px;padding:14px 32px;
+  border:1px solid rgba(255,255,255,.4);color:#fff;text-decoration:none;
+  font-family:'JetBrains Mono',monospace;font-size:.7em;letter-spacing:.3em;
+  text-transform:uppercase;transition:background .2s,color .2s,letter-spacing .2s}
+.sw-block .sw-btn:hover{background:#fff;color:#000;letter-spacing:.36em}
+.sw-block .sw-dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:#ffb454;margin:0 8px;animation:rec 1.6s ease-in-out infinite;vertical-align:middle}
+@media(max-width:900px){
+  .sw-block{padding:8vh 0;gap:14px}
+  .sw-block .sw-title{font-size:clamp(2.2em,11vw,3.4em);letter-spacing:.12em}
+  .sw-block .sw-msg{font-size:.88em;line-height:1.85}
+  .sw-block .sw-lbl{font-size:.6em;letter-spacing:.32em}
+  .sw-block .sw-btn{font-size:.6em;letter-spacing:.22em;padding:12px 24px}
+}
+
 /* filmstrip footer */
 .filmstrip{position:absolute;left:0;right:0;bottom:0;height:32px;
   background-image:linear-gradient(90deg, #000 50%, transparent 50%);
@@ -198,6 +233,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   .cs-features .f{border-right:none;border-bottom:1px solid var(--line)}
   .cs-features .f:last-child{border-bottom:none}
 }
+/* mobile-scale 1.2x + overflow guard */
+(max-width:900px){
+  html{font-size:120%}
+  body{overflow-x:hidden}
+  .field select,.field input,.field textarea{font-size:1em}
+}
 </style>
 </head>
 <body>
@@ -207,9 +248,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <nav>
     <a href="locahun3d_manifesto.html">マニフェスト</a>
     <a href="locahun3d_data.html">データについて</a>
-    <a href="locahun3d_works.html">使用シチュエーション・実績</a>
     <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
-    <a href="locahun3d_online.html" class="current">ロケハン3Dの未来</a>
+    <a href="locahun3d_online.html" class="current">ロケハン3Dの未来・実績</a>
     <a href="locahun3d_demo.html">デモ・見積</a>
     <a href="locahun3d_contact.html">お問い合わせ</a>
   </nav>
@@ -222,9 +262,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <div class="m-brand"><span>LOCAHUN 3D</span><span class="dot"></span></div>
   <a href="locahun3d_manifesto.html">マニフェスト</a>
   <a href="locahun3d_data.html">データについて</a>
-  <a href="locahun3d_works.html">使用シチュエーション・実績</a>
   <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
-  <a href="locahun3d_online.html" class="current">ロケハン3Dの未来</a>
+  <a href="locahun3d_online.html" class="current">ロケハン3Dの未来・実績</a>
   <a href="locahun3d_demo.html">デモ・見積</a>
   <a href="locahun3d_contact.html">お問い合わせ</a>
 </aside>
@@ -281,6 +320,33 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <span class="timecode bl">LOCAHUN 3D — ONLINE SCOUT</span>
   <span class="timecode br">COMING SOON</span>
   <div class="filmstrip"></div>
+</section>
+
+<!-- ===== FRAME 2 — SELECTED WORKS (migrated from works.html) ===== -->
+<section class="frame" id="o2">
+  <span class="timecode tl">CHAPTER 02</span>
+  <span class="timecode tr">— SELECTED WORKS —</span>
+
+  <div class="chapter-rule fade">
+    <span class="num">CH. 02</span>
+    <span class="line"></span>
+    <span>Selected Works — 導入実績</span>
+  </div>
+
+  <div class="sw-block fade">
+    <span class="sw-lbl"><span class="sw-dot"></span>STAY TUNED<span class="sw-dot"></span></span>
+    <h2 class="sw-title">COMING&nbsp;SOON</h2>
+    <p class="sw-msg">
+      導入事例は順次公開予定です。<br>
+      現在進行中のプロジェクトの詳細・参考事例については、お気軽にお問い合わせください。
+    </p>
+    <a class="sw-btn" href="locahun3d_contact.html">お問い合わせ →</a>
+  </div>
+
+  <div class="foot">
+    <span>SELECTED WORKS</span>
+    <span>P. 06 / 06</span>
+  </div>
 </section>
 
 <script>

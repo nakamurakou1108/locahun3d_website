@@ -384,6 +384,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   .end .cta-row{margin-top:32px;gap:12px;width:100%;align-items:center}
   .end .cta-caption{font-size:.55em;letter-spacing:.22em}
 }
+/* mobile-scale 1.2x + overflow guard */
+(max-width:900px){
+  html{font-size:120%}
+  body{overflow-x:hidden}
+  .field select,.field input,.field textarea{font-size:1em}
+}
 </style>
 </head>
 <body>
@@ -394,9 +400,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <nav>
     <a href="locahun3d_manifesto.html" class="current">マニフェスト</a>
     <a href="locahun3d_data.html">データについて</a>
-    <a href="locahun3d_works.html">使用シチュエーション・実績</a>
     <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
-    <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+    <a href="locahun3d_online.html">ロケハン3Dの未来・実績</a>
     <a href="locahun3d_demo.html">デモ・見積</a>
     <a href="locahun3d_contact.html">お問い合わせ</a>
   </nav>
@@ -412,9 +417,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <div class="m-brand"><span>LOCAHUN 3D</span><span class="dot"></span></div>
   <a href="locahun3d_manifesto.html" class="current">マニフェスト</a>
   <a href="locahun3d_data.html">データについて</a>
-  <a href="locahun3d_works.html">使用シチュエーション・実績</a>
   <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
-  <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+  <a href="locahun3d_online.html">ロケハン3Dの未来・実績</a>
   <a href="locahun3d_demo.html">デモ・見積</a>
   <a href="locahun3d_contact.html">お問い合わせ</a>
 </aside>
