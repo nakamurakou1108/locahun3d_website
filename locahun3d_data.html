@@ -192,7 +192,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .fs-grid{display:grid;grid-template-columns:1fr;gap:0;margin-top:4vh;
   border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .fs-grid .col{padding:40px 36px;border-bottom:1px solid var(--line);
-  display:flex;flex-direction:column;gap:18px;min-height:auto}
+  display:flex;flex-direction:column;gap:18px;min-height:auto;
+  align-items:center;text-align:center}
 .fs-grid .col:last-child{border-bottom:none}
 .fs-grid .col .num{font-family:'JetBrains Mono',monospace;font-size:.7em;
   letter-spacing:.3em;opacity:.55}
@@ -200,16 +201,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .fs-grid .col p{font-size:.9em;opacity:.78;line-height:1.85}
 
 /* Software pills (.ply対応ソフト) */
-.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;justify-content:center}
 .pills .pill{font-family:'JetBrains Mono',monospace;font-size:.7em;letter-spacing:.1em;
   border:1px solid var(--line);padding:6px 12px;color:rgba(255,255,255,.78);
   text-transform:uppercase;transition:border-color .2s,color .2s}
 .pills .pill:hover{border-color:var(--accent);color:#fff}
 
 /* PortalCam spec list */
-.spec-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.spec-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:6px;
+  max-width:540px;width:100%}
 .spec-list li{display:grid;grid-template-columns:120px 1fr;gap:18px;font-size:.85em;
-  border-bottom:1px dotted rgba(255,255,255,.12);padding:10px 0;align-items:baseline}
+  border-bottom:1px dotted rgba(255,255,255,.12);padding:10px 0;align-items:baseline;
+  text-align:left}
 .spec-list li:last-child{border-bottom:none}
 .spec-list li .k{font-family:'JetBrains Mono',monospace;font-size:.78em;
   letter-spacing:.2em;text-transform:uppercase;opacity:.55}
