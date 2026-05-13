@@ -52,19 +52,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .side-menu nav a.current{color:#fff;font-weight:600}
 .side-menu nav a.current::before{width:14px;background:#ffb454;opacity:1}
 @media(max-width:1199px){.side-menu{display:none}}
+@media(min-width:1200px){.frame{padding-left:max(220px, calc((100vw - 100vh * 4 / 3) / 2))}}
 
 /* ============================================
    MOBILE NAV — hamburger toggle + drawer
    ============================================ */
 .m-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1200;
-  width:46px;height:46px;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.22);cursor:pointer;
-  align-items:center;justify-content:center;flex-direction:column;gap:5px;padding:0}
-.m-toggle span{display:block;width:22px;height:1px;background:#fff;
+  width:58px;height:58px;background:rgba(0,0,0,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.32);border-radius:4px;cursor:pointer;
+  align-items:center;justify-content:center;flex-direction:column;gap:7px;padding:0;
+  box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.m-toggle span{display:block;width:30px;height:2px;background:#fff;border-radius:1px;
   transition:transform .3s,opacity .3s}
-.m-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.m-toggle.open span:nth-child(1){transform:translateY(9px) rotate(45deg)}
 .m-toggle.open span:nth-child(2){opacity:0}
-.m-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.m-toggle.open span:nth-child(3){transform:translateY(-9px) rotate(-45deg)}
 .m-nav{position:fixed;inset:0;z-index:1150;background:rgba(0,0,0,.96);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:96px 32px 32px;
   display:flex;flex-direction:column;gap:6px;
@@ -191,8 +193,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
     <a href="locahun3d_data.html">データについて</a>
     <a href="locahun3d_works.html" class="current">使用シチュエーション・実績</a>
     <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
-    <a href="locahun3d_demo.html">デモ・見積</a>
     <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+    <a href="locahun3d_demo.html">デモ・見積</a>
     <a href="locahun3d_contact.html">お問い合わせ</a>
   </nav>
 </aside>
@@ -206,8 +208,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <a href="locahun3d_data.html">データについて</a>
   <a href="locahun3d_works.html" class="current">使用シチュエーション・実績</a>
   <a href="locahun3d_pitch_hub.html">分野ごとの活用</a>
-  <a href="locahun3d_demo.html">デモ・見積</a>
   <a href="locahun3d_online.html">ロケハン3Dの未来</a>
+  <a href="locahun3d_demo.html">デモ・見積</a>
   <a href="locahun3d_contact.html">お問い合わせ</a>
 </aside>
 
