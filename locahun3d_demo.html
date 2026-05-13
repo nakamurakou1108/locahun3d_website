@@ -291,8 +291,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   .result{grid-template-columns:1fr}
 }
 /* mobile-scale 1.2x + overflow guard */
-(max-width:900px){
-  html{font-size:120%}
+@media(max-width:900px){
+  html{font-size:144%}
   body{overflow-x:hidden}
   .field select,.field input,.field textarea{font-size:1em}
 }
@@ -343,10 +343,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   </p>
 
   <div class="demo-row">
-    <div class="demo-screen fade">
-      <div class="play">▶</div>
-      DEMO REEL · 90 SEC
-    </div>
     <div class="demo-side fade">
       <h3>サンプルシーンを触る</h3>
       <p>ブラウザで動作する軽量版デモ、または .splat ファイル入りのフルキットをダウンロードして、デスクトップで試せます。</p>
@@ -366,6 +362,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
           <p class="meta-val">ダウンロードファイルを Chrome で開きましたら、<br>下部の「<strong>ユーザーマニュアルを開く</strong>」ボタンで参照できます。</p>
         </div>
       </div>
+    </div>
+    <div class="demo-screen fade">
+      <div class="play">▶</div>
+      DEMO REEL · 90 SEC
     </div>
   </div>
 
