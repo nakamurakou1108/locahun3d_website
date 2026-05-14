@@ -126,6 +126,16 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 
   .submit-row{margin-top:24px}
   .btn{font-size:.62em;letter-spacing:.22em;padding:14px 24px;width:100%;max-width:300px}
+  /* anti-overflow defensives */
+  .contact-row,.form,.info,.info .block,.emergency,.submit-row,.quote-preview,.quote-empty{min-width:0;max-width:100%}
+  .field{min-width:0}
+  .field input,.field select,.field textarea{max-width:100%}
+  .info .block .v.mono{overflow-wrap:anywhere;word-break:break-all}
+  .info .block p,.emergency p,.emergency .creed,.quote-preview dd,.quote-empty p{overflow-wrap:anywhere}
+  .emergency{padding:24px 18px}
+  .emergency .phone{font-size:1em;letter-spacing:.04em;padding:10px 18px;max-width:100%;
+    overflow-wrap:anywhere;word-break:break-all;box-sizing:border-box}
+  .emergency .signature{font-size:.55em;letter-spacing:.18em;overflow-wrap:anywhere;text-align:center;padding:0 6px}
 }
 
 .hero{justify-content:center;align-items:center;text-align:center}

@@ -115,6 +115,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   .form{grid-template-columns:1fr;gap:18px 0;margin-top:24px}
   .field{min-width:0}
   .field label{font-size:.58em;letter-spacing:.18em;overflow-wrap:anywhere;word-break:break-word}
+  /* anti-overflow defensives */
+  .est,.form,.result,.terms,.quote-cta,.demo-row,.demo-side,.demo-screen{min-width:0;max-width:100%}
+  .result{padding:18px 14px}
+  .result .price{font-size:clamp(1.3em,7vw,1.7em);letter-spacing:0;word-break:break-all}
+  .result .delivery-val{font-size:.95em;letter-spacing:.02em;overflow-wrap:anywhere}
+  .quote-cta-note{overflow-wrap:anywhere}
+  .terms .closing p{overflow-wrap:anywhere}
+  .est h2{overflow-wrap:anywhere}
 
   .result{padding:22px 20px;margin-top:32px;gap:16px}
   .result .price{font-size:1.7em}
