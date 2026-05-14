@@ -216,11 +216,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .sw-block .sw-dot{display:inline-block;width:6px;height:6px;border-radius:50%;
   background:#ffb454;margin:0 8px;animation:rec 1.6s ease-in-out infinite;vertical-align:middle}
 @media(max-width:900px){
-  .sw-block{padding:8vh 0;gap:14px}
-  .sw-block .sw-title{font-size:clamp(2.2em,11vw,3.4em);letter-spacing:.12em}
-  .sw-block .sw-msg{font-size:.88em;line-height:1.85}
-  .sw-block .sw-lbl{font-size:.6em;letter-spacing:.32em}
-  .sw-block .sw-btn{font-size:.6em;letter-spacing:.22em;padding:12px 24px}
+  .sw-block{padding:8vh 0;gap:14px;max-width:100%;overflow:hidden}
+  .sw-block .sw-title{font-size:clamp(1.6em,9vw,2.6em);letter-spacing:.05em;
+    text-indent:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+  .sw-block .sw-msg{font-size:.88em;line-height:1.85;padding:0 12px;
+    overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
+  .sw-block .sw-lbl{font-size:.6em;letter-spacing:.28em;text-indent:.28em;
+    max-width:100%;overflow-wrap:anywhere}
+  .sw-block .sw-btn{font-size:.6em;letter-spacing:.22em;padding:12px 24px;max-width:100%}
+  /* SELECTED WORKS chapter-rule label can wrap too */
+  .chapter-rule{flex-wrap:wrap;min-width:0;max-width:100%}
+  .chapter-rule > span:not(.line){overflow-wrap:anywhere;word-break:break-word}
+  .chapter-rule .line{min-width:20px}
 }
 
 /* filmstrip footer */

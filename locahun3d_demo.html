@@ -132,10 +132,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   .quote-cta .btn{width:100%}
   .quote-cta-note{font-size:.55em;letter-spacing:.16em;line-height:1.85}
 
-  .terms{padding-top:32px;margin-top:36px}
-  .terms .terms-head h3{font-size:1.15em}
-  .terms ul li{white-space:normal;font-size:.85em;line-height:1.85;text-align:left;padding:0 6px}
-  .terms .closing{font-size:.95em;line-height:1.95;margin-top:36px}
+  .terms{padding-top:32px;margin-top:36px;max-width:100%}
+  .terms .terms-head h3{font-size:1.15em;overflow-wrap:anywhere}
+  .terms ul{max-width:100%;width:100%;padding:0 6px;box-sizing:border-box}
+  .terms ul li{white-space:normal!important;font-size:.85em;line-height:1.85;
+    text-align:left;padding:0;overflow-wrap:anywhere;word-break:break-word;
+    min-width:0;max-width:100%}
+  .terms .closing{font-size:.9em;line-height:1.95;margin-top:36px;
+    max-width:100%;padding:0 6px;box-sizing:border-box}
+  .terms .closing p{overflow-wrap:anywhere;word-break:break-word;max-width:100%}
 }
 
 .hero{justify-content:center;align-items:center;text-align:center}
